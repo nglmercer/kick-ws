@@ -76,6 +76,10 @@ export class KickWebSocket extends WebSocketManager {
       "StreamHost",
       "PollUpdate",
       "PollDelete",
+      "rawMessage",
+      "ready",
+      "error",
+      "disconnect",
     ];
 
     events.forEach((event) => {

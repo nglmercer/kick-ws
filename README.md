@@ -1,62 +1,62 @@
-# Kick WebSocket Lite
+# Kick WebSocket
 
-Una librería ligera y sin dependencias para conectar a los WebSockets de Kick.com.
+A lightweight and dependency-free library for connecting to Kick.com WebSockets.
 
-## Características
+## Features
 
-- 🚀 **Ligera**: Sin dependencias externas, solo usa WebSocket nativo
-- 🔌 **Simple**: API intuitiva y fácil de usar
-- 🔄 **Auto-reconexión**: Reconexión automática configurable
-- 📊 **Buffer de mensajes**: Opcional, para análisis de datos
-- 🎯 **Filtrado de eventos**: Escucha solo los eventos que necesitas
-- 🛠️ **TypeScript**: Soporte completo de tipos
-- 📝 **Debug mode**: Registro detallado para desarrollo
-- 🌐 **Browser Support**: Totalmente compatible con navegadores modernos
-- 📱 **Mobile Ready**: Optimizada para dispositivos móviles
+- 🚀 **Lightweight**: No external dependencies, uses native WebSocket only
+- 🔌 **Simple**: Intuitive and easy-to-use API
+- 🔄 **Auto-reconnection**: Configurable automatic reconnection
+- 📊 **Message Buffer**: Optional, for data analysis
+- 🎯 **Event Filtering**: Listen only to the events you need
+- 🛠️ **TypeScript**: Full type support
+- 📝 **Debug Mode**: Detailed logging for development
+- 🌐 **Browser Support**: Full compatibility with modern browsers
+- 📱 **Mobile Ready**: Optimized for mobile devices
 
-## Instalación
+## Installation
 
 ### Node.js
 ```bash
-npm install kick-wss
+npm install kick-ws
 ```
 
-### Navegador (CDN)
+### Browser (CDN)
 ```html
-<!-- Versión minificada -->
-<script src="https://unpkg.com/kick-wss@latest/dist/browser/kick-wss.min.js"></script>
+<!-- Minified version -->
+<script src="https://unpkg.com/kick-ws@latest/dist/kick-ws.min.js"></script>
 
-<!-- Módulos ES -->
+<!-- ES Modules -->
 <script type="module">
-  import { KickWebSocket } from 'https://unpkg.com/kick-wss@latest/dist/browser/index.js';
-  // Tu código aquí
+  import { KickWebSocket } from 'https://unpkg.com/kick-ws@latest/dist/kick-ws.min.js';
+  // Your code here
 </script>
 ```
 
-## Uso Básico
+## Basic Usage
 
 ### Node.js / Backend
 ```typescript
-import { KickWebSocket } from 'kick-wss';
+import { KickWebSocket } from 'kick-ws';
 
-// Crear instancia
+// Create instance
 const kickWS = new KickWebSocket({ debug: true });
 
-// Conectar a un canal
-kickWS.connect('nombre-del-canal');
+// Connect to a channel
+kickWS.connect('channel-name');
 
-// Escuchar mensajes de chat
+// Listen to chat messages
 kickWS.on('ChatMessage', (message) => {
   console.log(`${message.sender.username}: ${message.content}`);
 });
 
-// Escuchar eventos de conexión
+// Listen to connection events
 kickWS.on('ready', () => {
-  console.log('✅ Conectado exitosamente');
+  console.log('✅ Successfully connected');
 });
 
 kickWS.on('disconnect', ({ reason }) => {
-  console.log('❌ Desconectado:', reason);
+  console.log('❌ Disconnected:', reason);
 });
 
 kickWS.on('error', (error) => {
@@ -64,18 +64,18 @@ kickWS.on('error', (error) => {
 });
 ```
 
-### Navegador / Frontend
+### Browser / Frontend
 ```html
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Kick WebSocket Ejemplo</title>
+    <title>Kick WebSocket Example</title>
 </head>
 <body>
     <div id="messages"></div>
 
     <script type="module">
-      import { KickWebSocket } from 'https://unpkg.com/kick-wss@latest/dist/browser/index.js';
+      import { KickWebSocket } from 'https://unpkg.com/kick-ws@latest/dist/kick-ws.min.js';
 
       const kickWS = new KickWebSocket({ debug: true });
       const messagesDiv = document.getElementById('messages');
@@ -87,102 +87,93 @@ kickWS.on('error', (error) => {
       });
 
       kickWS.connect('xqc');
-          </script>
-      </body>
-      </html>
-      ```
+    </script>
+</body>
+</html>
+```
 
-      ## 🌐 Compatibilidad con Navegadores
+## 🌐 Browser Compatibility
 
-      ### Navegadores Soportados
-      - Chrome 80+
-      - Firefox 72+
-      - Safari 13.1+
-      - Edge 80+
+### Supported Browsers
+- Chrome 80+
+- Firefox 72+
+- Safari 13.1+
+- Edge 80+
 
-      ### Verificación de Compatibilidad
-      ```javascript
-      import { checkBrowserCompatibility } from 'kick-wss/browser';
+### Compatibility Check
 
-      const compatibility = checkBrowserCompatibility();
-      if (!compatibility.compatible) {
-          console.error('Navegador no compatible:', compatibility.missing);
-      } else {
-          console.log('✅ Navegador compatible');
-      }
-      ```
 
-      ### Polyfills (si es necesario)
-      ```html
-      <!-- Para navegadores antiguos -->
-      <script src="https://cdn.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.js"></script>
-      ```
+### Polyfills (if needed)
+```html
+<!-- For older browsers -->
+<script src="https://cdn.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.js"></script>
+```
 
-      Para más detalles sobre el uso en navegador, consulta [BROWSER.md](./BROWSER.md).
+For more details on browser usage, see [BROWSER.md](./BROWSER.md).
 
-      ## Métodos de Conveniencia
+## Convenience Methods
 
-      ### Escuchar tipos específicos de eventos
+### Listen to specific event types
 
-      ```typescript
-      // Solo mensajes de chat
+```typescript
+// Chat messages only
 kickWS.onChatMessage((message) => {
-  console.log('Mensaje:', message.content);
+  console.log('Message:', message.content);
 });
 
-// Solo bans de usuarios
+// User bans only
 kickWS.onUserBanned((ban) => {
-  console.log('Usuario baneado:', ban.username);
+  console.log('Banned user:', ban.username);
 });
 
-// Solo suscripciones
+// Subscriptions only
 kickWS.onSubscription((sub) => {
-  console.log('Nueva suscripción:', sub.username);
+  console.log('New subscription:', sub.username);
 });
 
-// Todos los eventos de chat
+// All chat events
 kickWS.onChatEvents((event) => {
-  console.log('Evento de chat:', event);
+  console.log('Chat event:', event);
 });
 
-// Todos los eventos de usuarios
+// All user events
 kickWS.onUserEvents((event) => {
-  console.log('Evento de usuario:', event);
+  console.log('User event:', event);
 });
 
-// Todos los eventos en general
+// All events in general
 kickWS.onAllEvents((event) => {
-  console.log('Evento:', event);
+  console.log('Event:', event);
 });
 ```
 
-## Configuración Avanzada
+## Advanced Configuration
 
-### Opciones disponibles
+### Available Options
 
 ```typescript
 const options = {
-  debug: false,              // Mostrar logs de debug
-  autoReconnect: true,       // Reconectar automáticamente
-  reconnectInterval: 5000,   // Intervalo de reconexión (ms)
-  enableBuffer: false,       // Habilitar buffer de mensajes
-  bufferSize: 1000,          // Tamaño máximo del buffer
-  filteredEvents: []         // Eventos a escuchar (vacío = todos)
+  debug: false,              // Show debug logs
+  autoReconnect: true,       // Reconnect automatically
+  reconnectInterval: 5000,   // Reconnection interval (ms)
+  enableBuffer: false,       // Enable message buffer
+  bufferSize: 1000,          // Maximum buffer size
+  filteredEvents: []         // Events to listen to (empty = all)
 };
 
 const kickWS = new KickWebSocket(options);
 ```
 
-### Filtrado de eventos
+### Event Filtering
 
 ```typescript
-// Escuchar solo mensajes y bans
+// Listen only to messages and bans
 kickWS = new KickWebSocket({
   filteredEvents: ['ChatMessage', 'UserBanned', 'Subscription']
 });
 ```
 
-### Buffer de mensajes para análisis
+### Message Buffer for Analysis
 
 ```typescript
 kickWS = new KickWebSocket({
@@ -190,61 +181,61 @@ kickWS = new KickWebSocket({
   bufferSize: 2000
 });
 
-// Obtener mensajes del buffer
+// Get messages from buffer
 const messages = kickWS.getMessageBuffer();
-console.log(`Buffer tiene ${messages.length} mensajes`);
+console.log(`Buffer has ${messages.length} messages`);
 
-// Limpiar buffer
+// Clear buffer
 kickWS.clearMessageBuffer();
 ```
 
-## Preconfiguraciones
+## Presets
 
-### Modo ligero (bajo consumo)
-
-```typescript
-const kickWS = KickWebSocket.createLightweight('canal-name');
-```
-
-### Modo debug
+### Lightweight Mode (low consumption)
 
 ```typescript
-const kickWS = KickWebSocket.createDebug('canal-name');
+const kickWS = KickWebSocket.createLightweight('channel-name');
 ```
 
-### Modo analítico
+### Debug Mode
 
 ```typescript
-const kickWS = KickWebSocket.createAnalytics('canal-name');
+const kickWS = KickWebSocket.createDebug('channel-name');
 ```
 
-## Eventos Disponibles
+### Analytics Mode
 
-### Eventos de Chat
-- `ChatMessage`: Nuevos mensajes en el chat
-- `MessageDeleted`: Mensajes eliminados por moderadores
-- `PinnedMessageCreated`: Mensajes fijados
+```typescript
+const kickWS = KickWebSocket.createAnalytics('channel-name');
+```
 
-### Eventos de Usuarios
-- `UserBanned`: Usuarios baneados
-- `UserUnbanned`: Usuarios desbaneados
-- `Subscription`: Nuevas suscripciones
-- `GiftedSubscriptions`: Suscripciones regaladas
+## Available Events
 
-### Eventos de Stream
-- `StreamHost`: Cuando un canal hace host a otro
-- `PollUpdate`: Actualización de encuestas
-- `PollDelete`: Encuestas eliminadas
+### Chat Events
+- `ChatMessage`: New chat messages
+- `MessageDeleted`: Messages deleted by moderators
+- `PinnedMessageCreated`: Pinned messages
 
-### Eventos de Sistema
-- `ready`: Conexión establecida
-- `disconnect`: Conexión cerrada
-- `error`: Error de conexión
-- `rawMessage`: Mensaje raw del WebSocket
+### User Events
+- `UserBanned`: Banned users
+- `UserUnbanned`: Unbanned users
+- `Subscription`: New subscriptions
+- `GiftedSubscriptions`: Gifted subscriptions
 
-## Estructura de Datos
+### Stream Events
+- `StreamHost`: When a channel hosts another
+- `PollUpdate`: Poll updates
+- `PollDelete`: Deleted polls
 
-### Mensaje de Chat
+### System Events
+- `ready`: Connection established
+- `disconnect`: Connection closed
+- `error`: Connection error
+- `rawMessage`: Raw WebSocket message
+
+## Data Structure
+
+### Chat Message
 
 ```typescript
 interface ChatMessageEvent {
@@ -267,20 +258,20 @@ interface ChatMessageEvent {
 }
 ```
 
-### Otros eventos
+### Other Events
 
-Cada evento tiene su propia estructura de datos. Consulta los tipos TypeScript para más detalles.
+Each event has its own data structure. See TypeScript types for details.
 
-## Ejemplos Prácticos
+## Practical Examples
 
-### Bot de registro de actividad
+### Activity Logging Bot
 
 ```typescript
-import { KickWebSocket } from 'kick-wss';
+import { KickWebSocket } from 'kick-ws';
 
 const kickWS = new KickWebSocket({ debug: true });
 
-// Conectar a múltiples canales
+// Connect to multiple channels
 const channels = ['streamer1', 'streamer2', 'streamer3'];
 
 channels.forEach(channel => {
@@ -289,7 +280,7 @@ channels.forEach(channel => {
   ws.connect(channel);
 
   ws.onChatMessage((message) => {
-    // Guardar en base de datos
+    // Save to database
     saveToDatabase({
       channel,
       user: message.sender.username,
@@ -299,12 +290,12 @@ channels.forEach(channel => {
   });
 
   ws.onUserBanned((ban) => {
-    console.log(`🚫 ${ban.username} baneado en ${channel}`);
+    console.log(`🚫 ${ban.username} banned in ${channel}`);
   });
 });
 ```
 
-### Analizador de actividad en tiempo real
+### Real-time Activity Analyzer
 
 ```typescript
 const kickWS = KickWebSocket.createAnalytics('popular-streamer');
@@ -317,22 +308,22 @@ kickWS.onChatMessage(() => messageCount++);
 kickWS.onSubscription(() => subscriberCount++);
 kickWS.onUserBanned(() => banCount++);
 
-// Reporte cada minuto
+// Report every minute
 setInterval(() => {
-  console.log(`📊 Estadísticas del último minuto:
-    Mensajes: ${messageCount}
-    Suscripciones: ${subscriberCount}
+  console.log(`📊 Statistics for the last minute:
+    Messages: ${messageCount}
+    Subscriptions: ${subscriberCount}
     Bans: ${banCount}
   `);
 
-  // Resetear contadores
+  // Reset counters
   messageCount = 0;
   subscriberCount = 0;
   banCount = 0;
 }, 60000);
 ```
 
-### Sistema de notificaciones
+### Notification System
 
 ```typescript
 const kickWS = new KickWebSocket();
@@ -340,73 +331,73 @@ const kickWS = new KickWebSocket();
 kickWS.connect('monitored-channel');
 
 kickWS.onChatMessage((message) => {
-  // Detectar palabras clave
+  // Detect keywords
   if (message.content.includes('!help') || message.content.includes('!admin')) {
-    sendNotification(`🚨 Ayuda solicitada por ${message.sender.username}`);
+    sendNotification(`🚨 Help requested by ${message.sender.username}`);
   }
 });
 
 kickWS.onUserBanned((ban) => {
-  sendNotification(`🔨 Usuario baneado: ${ban.username}`);
+  sendNotification(`🔨 Banned user: ${ban.username}`);
 });
 
 kickWS.onSubscription((sub) => {
-  sendNotification(`⭐ Nueva suscripción: ${sub.username}`);
+  sendNotification(`⭐ New subscription: ${sub.username}`);
 });
 
 function sendNotification(message: string) {
-  // Implementar tu sistema de notificaciones
-  console.log('NOTIFICACIÓN:', message);
+  // Implement your notification system
+  console.log('NOTIFICATION:', message);
 }
 ```
 
 ## API Reference
 
-### Métodos Principales
+### Main Methods
 
-- `connect(channelName: string): Promise<void>` - Conectar a un canal
-- `disconnect(): void` - Desconectar manualmente
-- `on(event, handler): void` - Escuchar un evento
-- `once(event, handler): void` - Escuchar un evento una vez
-- `off(event, handler): void` - Dejar de escuchar un evento
-- `isConnected(): boolean` - Verificar si está conectado
-- `getConnectionState(): ConnectionState` - Obtener estado de conexión
+- `connect(channelName: string): Promise<void>` - Connect to a channel
+- `disconnect(): void` - Manual disconnect
+- `on(event, handler): void` - Listen to an event
+- `once(event, handler): void` - Listen to an event once
+- `off(event, handler): void` - Stop listening to an event
+- `isConnected(): boolean` - Check if connected
+- `getConnectionState(): ConnectionState` - Get connection state
 
-### Métodos de Información
+### Information Methods
 
-- `getChannelName(): string` - Nombre del canal actual
-- `getChannelId(): number` - ID del canal actual
-- `getMessageBuffer(): string[]` - Obtener buffer de mensajes
-- `clearMessageBuffer(): void` - Limpiar buffer
-- `getStats(): object` - Obtener estadísticas
-- `updateOptions(options): void` - Actualizar configuración
+- `getChannelName(): string` - Current channel name
+- `getChannelId(): number` - Current channel ID
+- `getMessageBuffer(): string[]` - Get message buffer
+- `clearMessageBuffer(): void` - Clear buffer
+- `getStats(): object` - Get statistics
+- `updateOptions(options): void` - Update configuration
 
-## Limitaciones
+## Limitations
 
-- 📖 **Solo lectura**: No envía mensajes al chat
-- 🔓 **Sin autenticación**: Solo funciona con chats públicos
-- 🌐 **Requiere internet**: Conexión a los servidores de Kick.com
+- 📖 **Read-only**: Does not send messages to chat
+- 🔓 **No Authentication**: Only works with public chats
+- 🌐 **Requires Internet**: Connection to Kick.com servers
 
-## Contribución
+## Contributing
 
-Las contribuciones son bienvenidas. Por favor:
+Contributions are welcome. Please:
 
-1. Fork el proyecto
-2. Crea una rama (`git checkout -b feature/amazing-feature`)
-3. Commit tus cambios (`git commit -m 'Add amazing feature'`)
-4. Push a la rama (`git push origin feature/amazing-feature`)
-5. Abre un Pull Request
+1. Fork the project
+2. Create a branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## Licencia
+## License
 
-MIT License - ver archivo LICENSE para detalles.
+MIT License - see LICENSE file for details.
 
-## Soporte
+## Support
 
-- 📧 Email: support@kick-js.com
-- 🐛 Issues: [GitHub Issues](https://github.com/nglmercer/kick-js/issues)
-- 📖 Documentación: [Wiki](https://github.com/nglmercer/kick-js/wiki)
+- 📧 Email: support@kick-wss.com
+- 🐛 Issues: [GitHub Issues](https://github.com/nglmercer/kick-ws/issues)
+- 📖 Documentation: [Wiki](https://github.com/nglmercer/kick-ws/wiki)
 
 ---
 
-**Kick WebSocket Lite** - La forma más simple de conectar a los chats de Kick.com.
+**Kick WebSocket Lite** - The simplest way to connect to Kick.com chats.

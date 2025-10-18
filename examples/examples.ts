@@ -1,12 +1,12 @@
 // Ejemplos de uso de la librería Kick WebSocket Lite
 
-import { KickWebSocket } from "./index.js";
+import { KickWebSocket } from "../src/index.js";
 import type {
   ChatMessageEvent,
   SubscriptionEvent,
   UserBannedEvent,
   GiftedSubscriptionsEvent,
-} from "./types.js";
+} from "../src/types.js";
 
 /**
  * Ejemplo 1: Uso básico - Conectar y escuchar mensajes

@@ -1,21 +1,26 @@
 {
   "name": "kick-wss",
-  "version": "1.0.0",
-  "description": "Librería ligera y sin dependencias para conectar a los WebSockets de Kick.com",
+  "version": "1.0.1",
+  "description": "Lightweight dependency-free library for connecting to Kick.com WebSockets",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "files": [
     "dist",
     "README.md",
+    "README.es.md",
+    "BROWSER.md",
+    "BROWSER.es.md",
+    "examples",
     "LICENSE"
   ],
-  "browser": "dist/browser/index.js",
-  "unpkg": "dist/browser/index.js",
-  "jsdelivr": "dist/browser/index.js",
+  "unpkg": "dist/kick-ws.min.js",
+  "jsdelivr": "dist/kick-ws.min.js",
   "scripts": {
-    "build": "tsc && npm run build:browser && cp README.md dist/ && cp LICENSE dist/",
-    "build:browser": "mkdir -p dist/browser && cp dist/index.js dist/browser/ && cp dist/index.d.ts dist/browser/ && cp dist/index.js.map dist/browser/ && cp dist/index.d.ts.map dist/browser/ && cp dist/types.js dist/browser/ && cp dist/types.d.ts dist/browser/ && cp dist/types.js.map dist/browser/ && cp dist/types.d.ts.map dist/browser/ && cp dist/EventEmitter.js dist/browser/ && cp dist/EventEmitter.d.ts dist/browser/ && cp dist/EventEmitter.js.map dist/browser/ && cp dist/EventEmitter.d.ts.map dist/browser/ && cp dist/MessageParser.js dist/browser/ && cp dist/MessageParser.d.ts dist/browser/ && cp dist/MessageParser.js.map dist/browser/ && cp dist/MessageParser.d.ts.map dist/browser/ && cp dist/WebSocketManager.js dist/browser/ && cp dist/WebSocketManager.d.ts dist/browser/ && cp dist/WebSocketManager.js.map dist/browser/ && cp dist/WebSocketManager.d.ts.map dist/browser/",
+    "build": "tsc && node scripts/bundle.cjs && bun run build:minified && bun run build:browser && bun run build:copy-files",
+    "build:minified": "bun x terser dist/kick-ws.js -c -m -o dist/kick-ws.min.js --source-map filename=kick-ws.min.js.map",
+    "build:browser": "node -e \"const fs = require('fs'); if (!fs.existsSync('dist/browser')) fs.mkdirSync('dist/browser', { recursive: true }); const copyFile = (src, dest) => { fs.copyFileSync(src, dest); }; copyFile('dist/kick-ws.min.js', 'dist/browser/kick-ws.min.js'); copyFile('dist/kick-ws.min.js.map', 'dist/browser/kick-ws.min.js.map'); copyFile('dist/kick-ws.js', 'dist/browser/kick-ws.js');\"",
+    "build:copy-files": "node -e \"const fs = require('fs'); const copyFile = (src, dest) => { fs.copyFileSync(src, dest); }; copyFile('README.md', 'dist/README.md'); copyFile('README.es.md', 'dist/README.es.md'); copyFile('LICENSE', 'dist/LICENSE');\"",
     "build:node": "tsc",
     "dev": "tsc --watch",
     "test": "bun test",
@@ -28,7 +33,7 @@
     "format": "prettier --write src/**/*.ts",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build && npm run test",
-    "clean": "rm -rf dist"
+    "clean": "if exist dist rmdir /s /q dist"
   },
   "keywords": [
     "kick",
@@ -44,22 +49,24 @@
     "typescript",
     "browser",
     "client-side",
-    "frontend"
+    "frontend",
+    "cdn",
+    "minified"
   ],
   "author": {
     "name": "Kick.js Team",
-    "email": "support@kick-js.com",
-    "url": "https://github.com/nglmercer/kick-js"
+    "email": "support@kick-wss.com",
+    "url": "https://github.com/nglmercer/kick-ws"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nglmercer/kick-js.git",
+    "url": "git+https://github.com/nglmercer/kick-ws.git",
     "directory": "websocket-lib"
   },
   "bugs": {
-    "url": "https://github.com/nglmercer/kick-js/issues"
+    "url": "https://github.com/nglmercer/kick-ws/issues"
   },
-  "homepage": "https://github.com/nglmercer/kick-js/tree/main/websocket-lib#readme",
+  "homepage": "https://github.com/nglmercer/kick-ws/tree/main/websocket-lib#readme",
   "license": "MIT",
   "engines": {
     "node": ">=14.0.0"
@@ -75,6 +82,7 @@
     "@types/node": "^20.0.0",
     "bun-types": "^1.3.0",
     "prettier": "^3.0.0",
+    "terser": "^5.44.0",
     "typescript": "^5.0.0"
   },
   "peerDependencies": {

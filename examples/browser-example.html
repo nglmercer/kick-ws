@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejemplo Kick WebSocket - Navegador</title>
+    <style>
+        * {
+            margin:</style> 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-connecting {
+            background: #f39c12;
+            color: white;
+        }
+
+        .status-connected {
+            background: #27ae60;
+            color: white;
+        }
+
+        .status-disconnected {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .status-error {
+            background: #8e44ad;
+            color: white;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .chat-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #53fc18 0%, #45d814 100%);
+            color: white;
+            padding: 15px 20px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .channel-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .live-indicator {
+            width: 10px;
+            height: 10px;
+            background: red;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .message {
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .message:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .message-chat {
+            border-left-color: #3498db;
+        }
+
+        .message-system {
+            border-left-color: #f39c12;
+            background: rgba(243, 156, 18, 0.1);
+            font-style: italic;
+        }
+
+        .message-error {
+            border-left-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+            color: #ffcccc;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .message-username {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .message-time {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .message-content {
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        .stats-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 20px;
+            height: 600px;
+            overflow-y: auto;
+        }
+
+        .stats-header {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s;
+        }
+
+        .stat-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .event-log {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+        }
+
+        .event-log h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .event-item {
+            padding: 8px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: #555;
+            border-left: 3px solid #95a5a6;
+        }
+
+        .event-item-chat { border-left-color: #3498db; }
+        .event-item-user { border-left-color: #9b59b6; }
+        .event-item-stream { border-left-color: #e67e22; }
+        .event-item-system { border-left-color: #95a5a6; }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e74c3c;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .input-group {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Kick WebSocket Demo</h1>
+            <p>Ejemplo en tiempo real de la librería Kick WebSocket Lite</p>
+        </div>
+
+        <div class="error-message" id="error-message">
+            <strong>Error:</strong> <span id="error-text"></span>
+        </div>
+
+        <div class="controls">
+            <div class="input-group">
+                <input type="text" id="channel-input" placeholder="Nombre del canal (ej: xqc)" value="xqc">
+                <button class="btn btn-primary" id="connect-btn">Conectar</button>
+                <button class="btn btn-danger" id="disconnect-btn" disabled>Desconectar</button>
+            </div>
+            </div>
+            <div class="status status-disconnected" id="status">Desconectado</div>
+        </div>
+
+        <div class="main-content">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div class="channel-info">
+                        <div class="live-indicator"></div>
+                        <span id="channel-display">Sin conexión</span>
+                    </div>
+                    <span id="message-count">0 mensajes</span>
+                </div>
+                <div class="chat-messages" id="chat-messages">
+                    <div class="message message-system">
+                        <div class="message-content">👋 Bienvenido! Conecta a un canal para ver los mensajes en tiempo real.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stats-header">📊 Estadísticas</div>
+
+                <div class="stat-item">
+                    <span class="stat-label">Mensajes</span>
+                    <span class="stat-value" id="stat-messages">0</span>
+                </div>
+
+                <div class="stat-item">
+                    <span class="stat-label">Usuarios Únicos</span>
+                    <span class="stat-value" id="stat-users">0</span>
+                </div>
+
+                <div class="stat-item">
+                    <span class="stat-label">Suscripciones</span>
+                    <span class="stat-value" id="stat-subs">0</span>
+                </div>
+
+                <div class="stat-item">
+                    <span class="stat-label">Bans</span>
+                    <span class="stat-value" id="stat-bans">0</span>
+                </div>
+
+                <div class="stat-item">
+                    <span class="stat-label">Tiempo Conectado</span>
+                    <span class="stat-value" id="stat-uptime">0s</span>
+                </div>
+
+                <div class="event-log">
+                    <h3>📋 Registro de Eventos</h3>
+                    <div id="event-log"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/kick-ws@latest/dist/kick-ws.min.js"></script>
+    <script>
+        class KickChatDemo {
+            constructor() {
+                this.kickWS = null;
+                this.stats = {
+                    messages: 0,
+                    users: new Set(),
+                    subscriptions: 0,
+                    bans: 0,
+                    startTime: null
+                };
+                this.eventLog = [];
+                this.maxLogEntries = 50;
+
+                this.initializeElements();
+                this.bindEvents();
+                this.startUptimeTimer();
+            }
+
+            initializeElements() {
+                this.elements = {
+                    channelInput: document.getElementById('channel-input'),
+                    connectBtn: document.getElementById('connect-btn'),
+                    disconnectBtn: document.getElementById('disconnect-btn'),
+                    status: document.getElementById('status'),
+                    channelDisplay: document.getElementById('channel-display'),
+                    messageCount: document.getElementById('message-count'),
+                    chatMessages: document.getElementById('chat-messages'),
+                    errorMessage: document.getElementById('error-message'),
+                    errorText: document.getElementById('error-text'),
+
+                    // Stats
+                    statMessages: document.getElementById('stat-messages'),
+                    statUsers: document.getElementById('stat-users'),
+                    statSubs: document.getElementById('stat-subs'),
+                    statBans: document.getElementById('stat-bans'),
+                    statUptime: document.getElementById('stat-uptime'),
+                    eventLog: document.getElementById('event-log')
+                };
+            }
+
+            bindEvents() {
+                this.elements.connectBtn.addEventListener('click', () => this.connect());
+                this.elements.disconnectBtn.addEventListener('click', () => this.disconnect());
+                this.elements.channelInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.connect();
+                });
+            }
+
+            async connect() {
+                const channelName = this.elements.channelInput.value.trim();
+                if (!channelName) {
+                    this.showError('Por favor ingresa un nombre de canal');
+                    return;
+                }
+
+                try {
+                    this.updateStatus('Conectando...', 'connecting');
+                    this.elements.connectBtn.disabled = true;
+
+                    this.kickWS = new KickWebSocket({
+                        debug: true,
+                        autoReconnect: true,
+                        reconnectInterval: 5000,
+                        enableBuffer: false
+                    });
+
+                    this.setupWebSocketEvents();
+
+                    await this.kickWS.connect(channelName);
+                    this.stats.startTime = Date.now();
+
+                } catch (error) {
+                    this.handleError(error);
+                }
+            }
+
+            disconnect() {
+                if (this.kickWS) {
+                    this.kickWS.disconnect();
+                    this.kickWS = null;
+                }
+                this.resetStats();
+                this.updateStatus('Desconectado', 'disconnected');
+                this.elements.connectBtn.disabled = false;
+                this.elements.disconnectBtn.disabled = true;
+                this.elements.channelDisplay.textContent = 'Sin conexión';
+            }
+
+            setupWebSocketEvents() {
+                this.kickWS.on('ready', () => {
+                    this.updateStatus('Conectado', 'connected');
+                    this.elements.connectBtn.disabled = true;
+                    this.elements.disconnectBtn.disabled = false;
+                    this.elements.channelDisplay.textContent = this.kickWS.getChannelName();
+                    this.addSystemMessage(`✅ Conectado a ${this.kickWS.getChannelName()}`);
+                    this.logEvent('system', 'Conexión establecida');
+                });
+
+                this.kickWS.on('disconnect', ({ reason }) => {
+                    this.updateStatus('Desconectado', 'disconnected');
+                    this.elements.connectBtn.disabled = false;
+                    this.elements.disconnectBtn.disabled = true;
+                    this.addSystemMessage(`❌ Desconectado: ${reason}`);
+                    this.logEvent('system', `Desconexión: ${reason}`);
+                });
+
+                this.kickWS.on('error', (error) => {
+                    this.handleError(error);
+                    this.logEvent('system', `Error: ${error.message}`);
+                });
+
+                this.kickWS.onChatMessage((message) => {
+                    this.addChatMessage(message);
+                    this.stats.messages++;
+                    this.stats.users.add(message.sender.username);
+                    this.updateStats();
+                    this.logEvent('chat', `Mensaje de ${message.sender.username}`);
+                });
+
+                this.kickWS.onUserBanned((ban) => {
+                    this.addSystemMessage(`🚫 ${ban.username} fue baneado`);
+                    this.stats.bans++;
+                    this.updateStats();
+                    this.logEvent('user', `Ban: ${ban.username}`);
+                });
+
+                this.kickWS.onSubscription((sub) => {
+                    this.addSystemMessage(`⭐ ¡${sub.username} se suscribió!`);
+                    this.stats.subscriptions++;
+                    this.updateStats();
+                    this.logEvent('user', `Suscripción: ${sub.username}`);
+                });
+
+                this.kickWS.onGiftedSubscriptions((gift) => {
+                    this.addSystemMessage(`🎁 ${gift.gifter_username} regaló suscripciones`);
+                    this.stats.subscriptions += gift.gift_count || 1;
+                    this.updateStats();
+                    this.logEvent('user', `Suscripciones regaladas por ${gift.gifter_username}`);
+                });
+
+                this.kickWS.onStreamHost((host) => {
+                    this.addSystemMessage(`📺 ${host.channel} haciendo host a ${host.target}`);
+                    this.logEvent('stream', `Host: ${host.channel} → ${host.target}`);
+                });
+            }
+
+            addChatMessage(message) {
+                const messageEl = document.createElement('div');
+                messageEl.className = 'message message-chat';
+
+                const username = message.sender.username;
+                const color = message.sender.identity?.color || '#ffffff';
+                const time = new Date().toLocaleTimeString();
+
+                messageEl.innerHTML = `
+                    <div class="message-header">
+                        <span class="message-username" style="color: ${color}">${username}</span>
+                        <span class="message-time">${time}</span>
+                    </div>
+                    <div class="message-content">${this.escapeHtml(message.content)}</div>
+                `;
+
+                this.elements.chatMessages.appendChild(messageEl);
+                this.scrollToBottom();
+                this.updateMessageCount();
+            }
+
+            addSystemMessage(text) {
+                const messageEl = document.createElement('div');
+                messageEl.className = 'message message-system';
+                messageEl.innerHTML = `
+                    <div class="message-content">${text}</div>
+                `;
+
+                this.elements.chatMessages.appendChild(messageEl);
+                this.scrollToBottom();
+            }
+
+            updateStatus(text, status) {
+                this.elements.status.textContent = text;
+                this.elements.status.className = `status status-${status}`;
+            }
+
+            updateMessageCount() {
+                this.elements.messageCount.textContent = `${this.stats.messages} mensajes`;
+            }
+
+            updateStats() {
+                this.elements.statMessages.textContent = this.stats.messages;
+                this.elements.statUsers.textContent = this.stats.users.size;
+                this.elements.statSubs.textContent = this.stats.subscriptions;
+                this.elements.statBans.textContent = this.stats.bans;
+            }
+
+            startUptimeTimer() {
+                setInterval(() => {
+                    if (this.stats.startTime) {
+                        const uptime = Math.floor((Date.now() - this.stats.startTime) / 1000);
+                        const hours = Math.floor(uptime / 3600);
+                        const minutes = Math.floor((uptime % 3600) / 60);
+                        const seconds = uptime % 60;
+
+                        let uptimeText = '';
+                        if (hours > 0) uptimeText += `${hours}h `;
+                        if (minutes > 0) uptimeText += `${minutes}m `;
+                        uptimeText += `${seconds}s`;
+
+                        this.elements.statUptime.textContent = uptimeText;
+                    }
+                }, 1000);
+            }
+
+            logEvent(type, message) {
+                const timestamp = new Date().toLocaleTimeString();
+                this.eventLog.unshift({ type, message, timestamp });
+
+                if (this.eventLog.length > this.maxLogEntries) {
+                    this.eventLog.pop();
+                }
+
+                this.renderEventLog();
+            }
+
+            renderEventLog() {
+                this.elements.eventLog.innerHTML = this.eventLog.map(event => `
+                    <div class="event-item event-item-${event.type}">
+                        <strong>[${event.timestamp}]</strong> ${event.message}
+                    </div>
+                `).join('');
+            }
+
+            scrollToBottom() {
+                this.elements.chatMessages.scrollTop = this.elements.chatMessages.scrollHeight;
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            showError(message) {
+                this.elements.errorText.textContent = message;
+                this.elements.errorMessage.classList.add('show');
+                setTimeout(() => {
+                    this.elements.errorMessage.classList.remove('show');
+                }, 5000);
+            }
+
+            handleError(error) {
+                console.error('WebSocket error:', error);
+                this.updateStatus('Error', 'error');
+                this.elements.connectBtn.disabled = false;
+                this.elements.disconnectBtn.disabled = true;
+                this.showError(`Error de conexión: ${error.message}`);
+            }
+
+            resetStats() {
+                this.stats = {
+                    messages: 0,
+                    users: new Set(),
+                    subscriptions: 0,
+                    bans: 0,
+                    startTime: null
+                };
+                this.updateStats();
+                this.elements.statUptime.textContent = '0s';
+                this.eventLog = [];
+                this.renderEventLog();
+            }
+        }
+
+        // Inicializar la aplicación cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', () => {
+            new KickChatDemo();
+        });
+    </script>
+</body>
+</html>
