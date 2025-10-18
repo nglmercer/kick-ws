@@ -17,13 +17,13 @@ Kick WebSocket Lite es una librería ultraligera para conectar a los WebSockets 
 ## 📦 Instalación
 
 ```bash
-npm install kick-websocket-lite
+npm install kick-ws
 ```
 
 ## 🎯 Uso Básico
 
 ```typescript
-import { KickWebSocket } from 'kick-websocket-lite';
+import { KickWebSocket } from 'kick-ws';
 
 // Crear instancia
 const kickWS = new KickWebSocket({ debug: true });
