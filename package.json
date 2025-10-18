@@ -1,0 +1,136 @@
+{
+  "name": "kick-websocket-lite",
+  "version": "1.0.0",
+  "description": "Librería ligera y sin dependencias para conectar a los WebSockets de Kick.com",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "browser": "dist/browser/index.js",
+  "unpkg": "dist/browser/index.js",
+  "jsdelivr": "dist/browser/index.js",
+  "scripts": {
+    "build": "tsc && npm run build:browser && cp README.md dist/ && cp LICENSE dist/",
+    "build:browser": "mkdir dist\\browser 2>nul & copy dist\\index.js dist\\browser\\ & copy dist\\index.d.ts dist\\browser\\ & copy dist\\index.js.map dist\\browser\\ & copy dist\\index.d.ts.map dist\\browser\\ & copy dist\\types.js dist\\browser\\ & copy dist\\types.d.ts dist\\browser\\ & copy dist\\types.js.map dist\\browser\\ & copy dist\\types.d.ts.map dist\\browser\\ & copy dist\\EventEmitter.js dist\\browser\\ & copy dist\\EventEmitter.d.ts dist\\browser\\ & copy dist\\EventEmitter.js.map dist\\browser\\ & copy dist\\EventEmitter.d.ts.map dist\\browser\\ & copy dist\\MessageParser.js dist\\browser\\ & copy dist\\MessageParser.d.ts dist\\browser\\ & copy dist\\MessageParser.js.map dist\\browser\\ & copy dist\\MessageParser.d.ts.map dist\\browser\\ & copy dist\\WebSocketManager.js dist\\browser\\ & copy dist\\WebSocketManager.d.ts dist\\browser\\ & copy dist\\WebSocketManager.js.map dist\\browser\\ & copy dist\\WebSocketManager.d.ts.map dist\\browser\\",
+    "build:node": "tsc",
+    "dev": "tsc --watch",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage --bail",
+    "test:watch": "bun test --watch",
+    "test:performance": "bun test tests/unit/performance.test.ts",
+    "test:unit": "bun test tests/unit/",
+    "test:integration": "bun test tests/integration/",
+    "test:all": "bun test tests/",
+    "format": "prettier --write src/**/*.ts",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build && npm run test",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "kick",
+    "kick.com",
+    "websocket",
+    "chat",
+    "streaming",
+    "bot",
+    "events",
+    "real-time",
+    "lightweight",
+    "no-dependencies",
+    "typescript",
+    "browser",
+    "client-side",
+    "frontend"
+  ],
+  "author": {
+    "name": "Kick.js Team",
+    "email": "support@kick-js.com",
+    "url": "https://github.com/retconned/kick-js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/retconned/kick-js.git",
+    "directory": "websocket-lib"
+  },
+  "bugs": {
+    "url": "https://github.com/retconned/kick-js/issues"
+  },
+  "homepage": "https://github.com/retconned/kick-js/tree/main/websocket-lib#readme",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not IE 11"
+  ],
+  "devDependencies": {
+    "@types/bun": "^1.3.0",
+    "@types/node": "^20.0.0",
+    "bun-types": "^1.3.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.5.0"
+  },
+  "bun": {
+    "test": {
+      "preload": ["./bun.test.ts"],
+      "coverage": {
+        "threshold": {
+          "statements": 80,
+          "branches": 75,
+          "functions": 80,
+          "lines": 80
+        }
+      }
+    }
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.js"
+    },
+    "./EventEmitter": {
+      "types": "./dist/EventEmitter.d.ts",
+      "import": "./dist/EventEmitter.js"
+    },
+    "./MessageParser": {
+      "types": "./dist/MessageParser.d.ts",
+      "import": "./dist/MessageParser.js"
+    },
+    "./WebSocketManager": {
+      "types": "./dist/WebSocketManager.d.ts",
+      "import": "./dist/WebSocketManager.js"
+    },
+    "./examples": {
+      "types": "./dist/examples.d.ts",
+      "import": "./dist/examples.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/retconned"
+  }
+}

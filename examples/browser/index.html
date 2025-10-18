@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kick WebSocket Lite - Ejemplo para Navegador</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+
+      .container {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .header {
+        text-align: center;
+        color: #53fc18;
+        margin-bottom: 30px;
+      }
+
+      .controls {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      .controls input,
+      .controls button {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+
+      .controls button {
+        background-color: #53fc18;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .controls button:hover {
+        background-color: #45d015;
+      }
+
+      .controls button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+
+      .status {
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        font-weight: bold;
+      }
+
+      .status.connected {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .status.connecting {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+      }
+
+      .status.disconnected {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .messages {
+        height: 400px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px;
+        background-color: #fafafa;
+      }
+
+      .message {
+        margin-bottom: 10px;
+        padding: 8px;
+        border-radius: 5px;
+        background-color: white;
+        border-left: 4px solid #53fc18;
+      }
+
+      .message.chat {
+        border-left-color: #007bff;
+      }
+
+      .message.ban {
+        border-left-color: #dc3545;
+      }
+
+      .message.subscription {
+        border-left-color: #28a745;
+      }
+
+      .message.gift {
+        border-left-color: #ffc107;
+      }
+
+      .message.system {
+        border-left-color: #6c757d;
+      }
+
+      .message-header {
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .message-content {
+        color: #333;
+      }
+
+      .message-time {
+        font-size: 0.8em;
+        color: #666;
+      }
+
+      .username {
+        color: #007bff;
+        font-weight: bold;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .stat-card {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        text-align: center;
+        border: 1px solid #dee2e6;
+      }
+
+      .stat-number {
+        font-size: 2em;
+        font-weight: bold;
+        color: #53fc18;
+      }
+
+      .stat-label {
+        color: #666;
+        font-size: 0.9em;
+      }
+
+      .error {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        border: 1px solid #f5c6cb;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🚀 Kick WebSocket Lite</h1>
+        <p>Ejemplo de uso en navegador - Conexión en tiempo real a Kick.com</p>
+      </div>
+
+      <div class="controls">
+        <input
+          type="text"
+          id="channelInput"
+          placeholder="Nombre del canal (ej: xqc)"
+          value="xqc"
+        />
+        <button id="connectBtn">Conectar</button>
+        <button id="disconnectBtn" disabled>Desconectar</button>
+        <button id="clearBtn">Limpiar mensajes</button>
+        <label> <input type="checkbox" id="debugCheck" /> Debug </label>
+      </div>
+
+      <div id="status" class="status disconnected">🔴 Desconectado</div>
+
+      <div id="errorContainer"></div>
+
+      <div class="container">
+        <h3>📊 Estadísticas</h3>
+        <div class="stats">
+          <div class="stat-card">
+            <div class="stat-number" id="totalMessages">0</div>
+            <div class="stat-label">Mensajes</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="chatMessages">0</div>
+            <div class="stat-label">Chat</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="subscriptions">0</div>
+            <div class="stat-label">Suscripciones</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="bans">0</div>
+            <div class="stat-label">Baneos</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <h3>💬 Mensajes en Tiempo Real</h3>
+        <div id="messages" class="messages">
+          <div class="loading">Esperando conexión...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Importamos la librería desde un CDN o local -->
+    <script type="module">
+      // Simulación de la librería - en producción esto sería importado desde npm/local
+      import { KickWebSocket } from "/dist/index.js";
+
+      // UI Controller
+      class UIController {
+        constructor() {
+          this.kickWS = null;
+          this.stats = {
+            total: 0,
+            chat: 0,
+            subscriptions: 0,
+            bans: 0,
+          };
+          this.initializeElements();
+          this.attachEventListeners();
+        }
+
+        initializeElements() {
+          this.channelInput = document.getElementById("channelInput");
+          this.connectBtn = document.getElementById("connectBtn");
+          this.disconnectBtn = document.getElementById("disconnectBtn");
+          this.clearBtn = document.getElementById("clearBtn");
+          this.debugCheck = document.getElementById("debugCheck");
+          this.statusDiv = document.getElementById("status");
+          this.messagesDiv = document.getElementById("messages");
+          this.errorContainer = document.getElementById("errorContainer");
+
+          // Stats elements
+          this.totalMessagesEl = document.getElementById("totalMessages");
+          this.chatMessagesEl = document.getElementById("chatMessages");
+          this.subscriptionsEl = document.getElementById("subscriptions");
+          this.bansEl = document.getElementById("bans");
+        }
+
+        attachEventListeners() {
+          this.connectBtn.addEventListener("click", () => this.connect());
+          this.disconnectBtn.addEventListener("click", () => this.disconnect());
+          this.clearBtn.addEventListener("click", () => this.clearMessages());
+          this.debugCheck.addEventListener("change", () => this.toggleDebug());
+        }
+
+        connect() {
+          const channelName = this.channelInput.value.trim();
+          if (!channelName) {
+            this.showError("Por favor ingresa un nombre de canal");
+            return;
+          }
+
+          this.kickWS = new KickWebSocket({
+            debug: this.debugCheck.checked,
+          });
+
+          this.setupEventListeners();
+          this.kickWS.connect(channelName);
+
+          this.updateStatus("connecting", "🟡 Conectando...");
+          this.connectBtn.disabled = true;
+          this.disconnectBtn.disabled = false;
+          this.clearMessages();
+        }
+
+        disconnect() {
+          if (this.kickWS) {
+            this.kickWS.disconnect();
+            this.kickWS = null;
+          }
+
+          this.updateStatus("disconnected", "🔴 Desconectado");
+          this.connectBtn.disabled = false;
+          this.disconnectBtn.disabled = true;
+        }
+
+        setupEventListeners() {
+          this.kickWS.on("ready", (data) => {
+            this.updateStatus("connected", `🟢 Conectado a ${data.channel}`);
+            this.addMessage(
+              "system",
+              `Conectado exitosamente a ${data.channel}`,
+            );
+          });
+
+          this.kickWS.on("ChatMessage", (data) => {
+            this.stats.total++;
+            this.stats.chat++;
+            this.updateStats();
+            this.addMessage(
+              "chat",
+              data.content,
+              data.sender.username,
+              data.created_at,
+            );
+          });
+
+          this.kickWS.on("Subscription", (data) => {
+            this.stats.total++;
+            this.stats.subscriptions++;
+            this.updateStats();
+            this.addMessage(
+              "subscription",
+              `🎉 Nueva suscripción de ${data.username}`,
+              "Sistema",
+            );
+          });
+
+          this.kickWS.on("UserBanned", (data) => {
+            this.stats.total++;
+            this.stats.bans++;
+            this.updateStats();
+            this.addMessage(
+              "ban",
+              `🚫 Usuario baneado: ${data.username}`,
+              "Sistema",
+            );
+          });
+
+          this.kickWS.on("disconnect", (data) => {
+            this.updateStatus("disconnected", "🔴 Desconectado");
+            this.addMessage(
+              "system",
+              `Desconectado: ${data.reason || "Sin razón"}`,
+            );
+            this.connectBtn.disabled = false;
+            this.disconnectBtn.disabled = true;
+          });
+
+          this.kickWS.on("error", (error) => {
+            this.showError(`Error: ${error.message}`);
+          });
+        }
+
+        updateStatus(status, message) {
+          this.statusDiv.className = `status ${status}`;
+          this.statusDiv.textContent = message;
+        }
+
+        addMessage(type, content, username = null, timestamp = null) {
+          const messageDiv = document.createElement("div");
+          messageDiv.className = `message ${type}`;
+
+          const time = timestamp
+            ? new Date(timestamp).toLocaleTimeString()
+            : new Date().toLocaleTimeString();
+          const displayUsername = username || "Sistema";
+
+          messageDiv.innerHTML = `
+                    <div class="message-header">
+                        <span class="username">${displayUsername}</span>
+                        <span class="message-time">${time}</span>
+                    </div>
+                    <div class="message-content">${content}</div>
+                `;
+
+          this.messagesDiv.appendChild(messageDiv);
+          this.messagesDiv.scrollTop = this.messagesDiv.scrollHeight;
+        }
+
+        clearMessages() {
+          this.messagesDiv.innerHTML =
+            '<div class="loading">Esperando mensajes...</div>';
+        }
+
+        updateStats() {
+          this.totalMessagesEl.textContent = this.stats.total;
+          this.chatMessagesEl.textContent = this.stats.chat;
+          this.subscriptionsEl.textContent = this.stats.subscriptions;
+          this.bansEl.textContent = this.stats.bans;
+        }
+
+        showError(message) {
+          const errorDiv = document.createElement("div");
+          errorDiv.className = "error";
+          errorDiv.textContent = message;
+          this.errorContainer.appendChild(errorDiv);
+
+          setTimeout(() => {
+            errorDiv.remove();
+          }, 5000);
+        }
+
+        toggleDebug() {
+          if (this.kickWS) {
+            this.kickWS.options.debug = this.debugCheck.checked;
+          }
+        }
+      }
+
+      // Inicializar la aplicación cuando el DOM esté listo
+      document.addEventListener("DOMContentLoaded", () => {
+        new UIController();
+      });
+    </script>
+  </body>
+</html>
