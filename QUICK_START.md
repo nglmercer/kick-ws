@@ -71,8 +71,8 @@ const kickWS = new KickWebSocket({
   enableBuffer: true,             // Habilitar buffer
   bufferSize: 1000,               // Tamaño del buffer
   filteredEvents: [               // Eventos a escuchar
-    'ChatMessage', 
-    'UserBanned', 
+    'ChatMessage',
+    'UserBanned',
     'Subscription'
   ]
 });
@@ -166,9 +166,9 @@ const channels = ['streamer1', 'streamer2', 'streamer3'];
 
 channels.forEach(channel => {
   const ws = new KickWebSocket({ debug: false });
-  
+
   ws.connect(channel);
-  
+
   ws.onChatMessage((msg) => {
     console.log(`[${channel}] ${msg.sender.username}: ${msg.content}`);
   });
@@ -234,7 +234,7 @@ Revisa el archivo `examples.ts` para más casos de uso:
 ## 🆘 Soporte
 
 - 📖 **Documentación completa**: `README.md`
-- 🐛 **Issues**: [GitHub Issues](https://github.com/retconned/kick-js/issues)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/nglmercer/kick-js/issues)
 - 💬 **Discord**: Servidor de soporte
 
 ## 🎯 Consejos Rápidos

@@ -73,19 +73,19 @@ kickWS.on('error', (error) => {
 </head>
 <body>
     <div id="messages"></div>
-    
+
     <script type="module">
       import { KickWebSocket } from 'https://unpkg.com/kick-ws@latest/dist/browser/index.js';
-      
+
       const kickWS = new KickWebSocket({ debug: true });
       const messagesDiv = document.getElementById('messages');
-      
+
       kickWS.onChatMessage((message) => {
           const messageEl = document.createElement('div');
           messageEl.innerHTML = `<strong>${message.sender.username}:</strong> ${message.content}`;
           messagesDiv.appendChild(messageEl);
       });
-      
+
       kickWS.connect('xqc');
           </script>
       </body>
@@ -285,9 +285,9 @@ const channels = ['streamer1', 'streamer2', 'streamer3'];
 
 channels.forEach(channel => {
   const ws = new KickWebSocket();
-  
+
   ws.connect(channel);
-  
+
   ws.onChatMessage((message) => {
     // Guardar en base de datos
     saveToDatabase({
@@ -297,7 +297,7 @@ channels.forEach(channel => {
       timestamp: message.created_at
     });
   });
-  
+
   ws.onUserBanned((ban) => {
     console.log(`🚫 ${ban.username} baneado en ${channel}`);
   });
@@ -324,7 +324,7 @@ setInterval(() => {
     Suscripciones: ${subscriberCount}
     Bans: ${banCount}
   `);
-  
+
   // Resetear contadores
   messageCount = 0;
   subscriberCount = 0;
@@ -404,8 +404,8 @@ MIT License - ver archivo LICENSE para detalles.
 ## Soporte
 
 - 📧 Email: support@kick-js.com
-- 🐛 Issues: [GitHub Issues](https://github.com/retconned/kick-js/issues)
-- 📖 Documentación: [Wiki](https://github.com/retconned/kick-js/wiki)
+- 🐛 Issues: [GitHub Issues](https://github.com/nglmercer/kick-js/issues)
+- 📖 Documentación: [Wiki](https://github.com/nglmercer/kick-js/wiki)
 
 ---
 

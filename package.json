@@ -15,7 +15,7 @@
   "jsdelivr": "dist/browser/index.js",
   "scripts": {
     "build": "tsc && npm run build:browser && cp README.md dist/ && cp LICENSE dist/",
-    "build:browser": "mkdir dist\\browser 2>nul & copy dist\\index.js dist\\browser\\ & copy dist\\index.d.ts dist\\browser\\ & copy dist\\index.js.map dist\\browser\\ & copy dist\\index.d.ts.map dist\\browser\\ & copy dist\\types.js dist\\browser\\ & copy dist\\types.d.ts dist\\browser\\ & copy dist\\types.js.map dist\\browser\\ & copy dist\\types.d.ts.map dist\\browser\\ & copy dist\\EventEmitter.js dist\\browser\\ & copy dist\\EventEmitter.d.ts dist\\browser\\ & copy dist\\EventEmitter.js.map dist\\browser\\ & copy dist\\EventEmitter.d.ts.map dist\\browser\\ & copy dist\\MessageParser.js dist\\browser\\ & copy dist\\MessageParser.d.ts dist\\browser\\ & copy dist\\MessageParser.js.map dist\\browser\\ & copy dist\\MessageParser.d.ts.map dist\\browser\\ & copy dist\\WebSocketManager.js dist\\browser\\ & copy dist\\WebSocketManager.d.ts dist\\browser\\ & copy dist\\WebSocketManager.js.map dist\\browser\\ & copy dist\\WebSocketManager.d.ts.map dist\\browser\\",
+    "build:browser": "mkdir -p dist/browser && cp dist/index.js dist/browser/ && cp dist/index.d.ts dist/browser/ && cp dist/index.js.map dist/browser/ && cp dist/index.d.ts.map dist/browser/ && cp dist/types.js dist/browser/ && cp dist/types.d.ts dist/browser/ && cp dist/types.js.map dist/browser/ && cp dist/types.d.ts.map dist/browser/ && cp dist/EventEmitter.js dist/browser/ && cp dist/EventEmitter.d.ts dist/browser/ && cp dist/EventEmitter.js.map dist/browser/ && cp dist/EventEmitter.d.ts.map dist/browser/ && cp dist/MessageParser.js dist/browser/ && cp dist/MessageParser.d.ts dist/browser/ && cp dist/MessageParser.js.map dist/browser/ && cp dist/MessageParser.d.ts.map dist/browser/ && cp dist/WebSocketManager.js dist/browser/ && cp dist/WebSocketManager.d.ts dist/browser/ && cp dist/WebSocketManager.js.map dist/browser/ && cp dist/WebSocketManager.d.ts.map dist/browser/",
     "build:node": "tsc",
     "dev": "tsc --watch",
     "test": "bun test",
@@ -49,17 +49,17 @@
   "author": {
     "name": "Kick.js Team",
     "email": "support@kick-js.com",
-    "url": "https://github.com/retconned/kick-js"
+    "url": "https://github.com/nglmercer/kick-js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/retconned/kick-js.git",
+    "url": "git+https://github.com/nglmercer/kick-js.git",
     "directory": "websocket-lib"
   },
   "bugs": {
-    "url": "https://github.com/retconned/kick-js/issues"
+    "url": "https://github.com/nglmercer/kick-js/issues"
   },
-  "homepage": "https://github.com/retconned/kick-js/tree/main/websocket-lib#readme",
+  "homepage": "https://github.com/nglmercer/kick-js/tree/main/websocket-lib#readme",
   "license": "MIT",
   "engines": {
     "node": ">=14.0.0"
@@ -82,7 +82,9 @@
   },
   "bun": {
     "test": {
-      "preload": ["./bun.test.ts"],
+      "preload": [
+        "./bun.test.ts"
+      ],
       "coverage": {
         "threshold": {
           "statements": 80,
@@ -131,6 +133,6 @@
   },
   "funding": {
     "type": "github",
-    "url": "https://github.com/sponsors/retconned"
+    "url": "https://github.com/sponsors/nglmercer"
   }
 }

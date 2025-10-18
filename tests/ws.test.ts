@@ -14,7 +14,7 @@ import type {
 const TEST_CONFIG = {
   // Canal activo para pruebas (puedes cambiarlo por uno que esté activo)
   channelName: "girlofnox", // Canal popular que suele estar activo
-  timeout: 15000, // 15 segundos de timeout para conexión
+  timeout: 10000, // 10 segundos de timeout para conexión
   messageWaitTime: 30000, // 30segs para esperar mensajes
   debug: true,
 };
