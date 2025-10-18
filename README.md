@@ -18,17 +18,17 @@ Una librería ligera y sin dependencias para conectar a los WebSockets de Kick.c
 
 ### Node.js
 ```bash
-npm install kick-ws
+npm install kick-wss
 ```
 
 ### Navegador (CDN)
 ```html
 <!-- Versión minificada -->
-<script src="https://unpkg.com/kick-ws@latest/dist/browser/kick-ws.min.js"></script>
+<script src="https://unpkg.com/kick-wss@latest/dist/browser/kick-wss.min.js"></script>
 
 <!-- Módulos ES -->
 <script type="module">
-  import { KickWebSocket } from 'https://unpkg.com/kick-ws@latest/dist/browser/index.js';
+  import { KickWebSocket } from 'https://unpkg.com/kick-wss@latest/dist/browser/index.js';
   // Tu código aquí
 </script>
 ```
@@ -37,7 +37,7 @@ npm install kick-ws
 
 ### Node.js / Backend
 ```typescript
-import { KickWebSocket } from 'kick-ws';
+import { KickWebSocket } from 'kick-wss';
 
 // Crear instancia
 const kickWS = new KickWebSocket({ debug: true });
@@ -75,7 +75,7 @@ kickWS.on('error', (error) => {
     <div id="messages"></div>
 
     <script type="module">
-      import { KickWebSocket } from 'https://unpkg.com/kick-ws@latest/dist/browser/index.js';
+      import { KickWebSocket } from 'https://unpkg.com/kick-wss@latest/dist/browser/index.js';
 
       const kickWS = new KickWebSocket({ debug: true });
       const messagesDiv = document.getElementById('messages');
@@ -102,7 +102,7 @@ kickWS.on('error', (error) => {
 
       ### Verificación de Compatibilidad
       ```javascript
-      import { checkBrowserCompatibility } from 'kick-ws/browser';
+      import { checkBrowserCompatibility } from 'kick-wss/browser';
 
       const compatibility = checkBrowserCompatibility();
       if (!compatibility.compatible) {
@@ -276,7 +276,7 @@ Cada evento tiene su propia estructura de datos. Consulta los tipos TypeScript p
 ### Bot de registro de actividad
 
 ```typescript
-import { KickWebSocket } from 'kick-ws';
+import { KickWebSocket } from 'kick-wss';
 
 const kickWS = new KickWebSocket({ debug: true });
 

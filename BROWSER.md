@@ -21,17 +21,17 @@ Kick WebSocket Lite es totalmente compatible con el uso en navegadores modernos.
 
 ```html
 <!-- Versión minificada -->
-<script src="https://unpkg.com/kick-ws@latest/dist/browser/kick-ws.min.js"></script>
+<script src="https://unpkg.com/kick-wss@latest/dist/browser/kick-wss.min.js"></script>
 
 <!-- O versión development -->
-<script src="https://unpkg.com/kick-ws@latest/dist/browser/index.js"></script>
+<script src="https://unpkg.com/kick-wss@latest/dist/browser/index.js"></script>
 ```
 
 ### Opción 2: Módulos ES (Recomendado para producción)
 
 ```html
 <script type="module">
-  import { KickWebSocket } from 'https://unpkg.com/kick-ws@latest/dist/browser/index.js';
+  import { KickWebSocket } from 'https://unpkg.com/kick-wss@latest/dist/browser/index.js';
 
   // Tu código aquí
 </script>
@@ -40,11 +40,11 @@ Kick WebSocket Lite es totalmente compatible con el uso en navegadores modernos.
 ### Opción 3: Bundler (Webpack, Vite, Rollup)
 
 ```bash
-npm install kick-ws
+npm install kick-wss
 ```
 
 ```javascript
-import { KickWebSocket } from 'kick-ws/browser';
+import { KickWebSocket } from 'kick-wss/browser';
 
 // Tu código aquí
 ```
@@ -63,7 +63,7 @@ import { KickWebSocket } from 'kick-ws/browser';
     <div id="messages"></div>
 
     <script type="module">
-        import { KickWebSocket } from 'https://unpkg.com/kick-ws@latest/dist/browser/index.js';
+        import { KickWebSocket } from 'https://unpkg.com/kick-wss@latest/dist/browser/index.js';
 
         const kickWS = new KickWebSocket({ debug: true });
         const messagesDiv = document.getElementById('messages');
@@ -96,7 +96,7 @@ import { KickWebSocket } from 'kick-ws/browser';
 ### Verificación de Compatibilidad
 
 ```javascript
-import { checkBrowserCompatibility, createKickWebSocket } from 'kick-ws/browser';
+import { checkBrowserCompatibility, createKickWebSocket } from 'kick-wss/browser';
 
 // Verificar compatibilidad
 const compatibility = checkBrowserCompatibility();
@@ -117,7 +117,7 @@ if (!compatibility.compatible) {
 
 ```jsx
 import React, { useState, useEffect } from 'react';
-import { KickWebSocket } from 'kick-ws/browser';
+import { KickWebSocket } from 'kick-wss/browser';
 
 function ChatComponent({ channelName }) {
     const [messages, setMessages] = useState([]);
@@ -173,7 +173,7 @@ function ChatComponent({ channelName }) {
 </template>
 
 <script>
-import { KickWebSocket } from 'kick-ws/browser';
+import { KickWebSocket } from 'kick-wss/browser';
 
 export default {
     props: ['channelName'],
@@ -222,7 +222,7 @@ export default {
 <script src="https://cdn.jsdelivr.net/npm/websocket-polyfill@0.0.3/index.js"></script>
 
 <!-- Luego la librería -->
-<script src="https://unpkg.com/kick-ws@latest/dist/browser/kick-ws.min.js"></script>
+<script src="https://unpkg.com/kick-wss@latest/dist/browser/kick-wss.min.js"></script>
 ```
 
 ### Configuración CORS
@@ -235,7 +235,7 @@ Para evitar problemas de CORS, asegúrate de que el servidor de Kick.com permita
 ### Manejo de Errores
 
 ```javascript
-import { KickWebSocket } from 'kick-ws/browser';
+import { KickWebSocket } from 'kick-wss/browser';
 
 const kickWS = new KickWebSocket();
 
