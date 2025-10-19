@@ -1,6 +1,6 @@
 {
   "name": "kick-wss",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Lightweight dependency-free library for connecting to Kick.com WebSockets",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -243,16 +243,12 @@ describe("KickWebSocket", () => {
     expect(() => kickWS.clearMessageBuffer()).not.toThrow();
   });
 
-  it("debería crear instancias preconfiguradas", () => {
+  it("debería crear instancia preconfigurada", () => {
     expect(() => {
-      const lightweight = KickWebSocket.createLightweight();
       const debug = KickWebSocket.createDebug();
-      const analytics = KickWebSocket.createAnalytics();
 
       // Limpiar
-      lightweight.disconnect();
       debug.disconnect();
-      analytics.disconnect();
     }).not.toThrow();
   });
 });

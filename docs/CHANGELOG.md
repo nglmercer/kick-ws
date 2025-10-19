@@ -16,10 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🎯 Event filtering system
 - 🌐 Universal compatibility (Node.js and browsers)
 - 📱 Mobile-optimized implementation
-- 🔧 Multiple configuration presets (lightweight, debug, analytics)
+- 🔧 Configuration convenience methods (debug mode)
 - 📝 Comprehensive API with convenience methods
 - 🌍 Dual language documentation (English and Spanish)
 - 📦 CDN distribution with minified version
+- 📋 Exported event constants for easy filtering
 - 🎨 Browser compatibility checking
 - 📚 Extensive examples and documentation
 - 🧪 Complete test coverage
@@ -95,10 +96,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `onStreamEvents(handler)` - Listen to all stream events
 - `onAllEvents(handler)` - Listen to all events
 
+### Constants
+- `KICK_EVENTS` - Array of all available event types for filtering
+
 ### Static Factory Methods
-- `KickWebSocket.createLightweight(channelName?)` - Lightweight preset
-- `KickWebSocket.createDebug(channelName?)` - Debug preset
-- `KickWebSocket.createAnalytics(channelName?)` - Analytics preset
+- `KickWebSocket.createDebug(channelName?)` - Debug preset method
 
 ### Configuration Options
 - `debug: boolean` - Enable debug logging

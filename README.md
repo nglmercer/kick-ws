@@ -171,6 +171,21 @@ const kickWS = new KickWebSocket(options);
 kickWS = new KickWebSocket({
   filteredEvents: ['ChatMessage', 'UserBanned', 'Subscription']
 });
+
+// Or use the KICK_EVENTS constant for all available events
+import { KICK_EVENTS } from 'kick-wss';
+
+// Listen to all events
+kickWS = new KickWebSocket({
+  filteredEvents: KICK_EVENTS
+});
+
+// Listen to specific categories
+kickWS = new KickWebSocket({
+  filteredEvents: KICK_EVENTS.filter(event => 
+    event.includes('Chat') || event.includes('User')
+  )
+});
 ```
 
 ### Message Buffer for Analysis
@@ -189,24 +204,12 @@ console.log(`Buffer has ${messages.length} messages`);
 kickWS.clearMessageBuffer();
 ```
 
-## Presets
-
-### Lightweight Mode (low consumption)
-
-```typescript
-const kickWS = KickWebSocket.createLightweight('channel-name');
-```
+## Convenience Methods
 
 ### Debug Mode
 
 ```typescript
 const kickWS = KickWebSocket.createDebug('channel-name');
-```
-
-### Analytics Mode
-
-```typescript
-const kickWS = KickWebSocket.createAnalytics('channel-name');
 ```
 
 ## Available Events
@@ -298,7 +301,19 @@ channels.forEach(channel => {
 ### Real-time Activity Analyzer
 
 ```typescript
-const kickWS = KickWebSocket.createAnalytics('popular-streamer');
+const kickWS = new KickWebSocket({
+  debug: true,
+  enableBuffer: true,
+  bufferSize: 2000,
+  filteredEvents: [
+    'ChatMessage',
+    'UserBanned', 
+    'Subscription',
+    'GiftedSubscriptions'
+  ]
+});
+
+kickWS.connect('popular-streamer');
 
 let messageCount = 0;
 let subscriberCount = 0;
@@ -394,7 +409,6 @@ MIT License - see LICENSE file for details.
 
 ## Support
 
-- 📧 Email: support@kick-wss.com
 - 🐛 Issues: [GitHub Issues](https://github.com/nglmercer/kick-wss/issues)
 - 📖 Documentation: [Wiki](https://github.com/nglmercer/kick-wss/wiki)
 

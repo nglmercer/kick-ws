@@ -107,22 +107,26 @@ export interface PollDeleteEvent {
   type: "poll_delete";
 }
 
+// Array de todos los eventos disponibles
+export const KICK_EVENTS = [
+  "ChatMessage",
+  "MessageDeleted",
+  "UserBanned",
+  "UserUnbanned",
+  "Subscription",
+  "GiftedSubscriptions",
+  "PinnedMessageCreated",
+  "StreamHost",
+  "PollUpdate",
+  "PollDelete",
+  "ready",
+  "disconnect",
+  "error",
+  "rawMessage",
+] as const;
+
 // Tipos de eventos que pueden ser emitidos
-export type KickEventType =
-  | "ChatMessage"
-  | "MessageDeleted"
-  | "UserBanned"
-  | "UserUnbanned"
-  | "Subscription"
-  | "GiftedSubscriptions"
-  | "PinnedMessageCreated"
-  | "StreamHost"
-  | "PollUpdate"
-  | "PollDelete"
-  | "ready"
-  | "disconnect"
-  | "error"
-  | "rawMessage";
+export type KickEventType = (typeof KICK_EVENTS)[number];
 
 // Mapa de tipos de datos para cada evento
 export interface EventDataMap {

@@ -45,7 +45,19 @@ export function activityLogger() {
   console.log("=== Ejemplo 2: Bot de Registro de Actividad ===");
 
   // Usar configuración para análisis
-  const kickWS = KickWebSocket.createAnalytics("streamer-popular");
+  const kickWS = new KickWebSocket({
+    debug: true,
+    enableBuffer: true,
+    bufferSize: 2000,
+    filteredEvents: [
+      "ChatMessage",
+      "UserBanned",
+      "Subscription",
+      "GiftedSubscriptions",
+    ],
+  });
+
+  kickWS.connect("streamer-popular");
 
   let stats = {
     messages: 0,
@@ -231,7 +243,15 @@ export function notificationSystem() {
 export function sentimentAnalyzer() {
   console.log("=== Ejemplo 5: Analizador de Sentimientos ===");
 
-  const kickWS = KickWebSocket.createLightweight("target-channel");
+  const kickWS = new KickWebSocket({
+    debug: false,
+    autoReconnect: true,
+    reconnectInterval: 10000,
+    enableBuffer: false,
+    filteredEvents: ["ChatMessage"], // Solo mensajes de chat
+  });
+
+  kickWS.connect("target-channel");
 
   // Palabras para análisis de sentimientos
   const positiveWords = [
