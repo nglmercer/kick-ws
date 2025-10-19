@@ -6,7 +6,7 @@ Esta guía cubre cómo usar Kick WebSocket Lite en navegadores web.
 
 ### Versión Minificada (Recomendada)
 ```html
-<script src="https://unpkg.com/kick-ws@latest/dist/kick-ws.min.js"></script>
+<script src="https://unpkg.com/kick-wss@latest/dist/kick-ws.min.js"></script>
 <script>
   // Disponible como variable global KickWebSocket
   const kickWS = new KickWebSocket({ debug: true });
@@ -17,8 +17,8 @@ Esta guía cubre cómo usar Kick WebSocket Lite en navegadores web.
 ### Módulos ES (Navegadores Modernos)
 ```html
 <script type="module">
-  import { KickWebSocket } from 'https://unpkg.com/kick-ws@latest/dist/kick-ws.min.js';
-  
+  import { KickWebSocket } from 'https://unpkg.com/kick-wss@latest/dist/kick-ws.min.js';
+
   const kickWS = new KickWebSocket({ debug: true });
   kickWS.connect('nombre-del-canal');
 </script>
@@ -61,14 +61,14 @@ La librería es compatible con todos los navegadores modernos que soportan WebSo
             overflow: hidden;
             font-family: Arial, sans-serif;
         }
-        
+
         .chat-header {
             background: #53fc18;
             color: white;
             padding: 10px;
             font-weight: bold;
         }
-        
+
         .chat-messages {
             height: 400px;
             overflow-y: auto;
@@ -76,25 +76,25 @@ La librería es compatible con todos los navegadores modernos que soportan WebSo
             background: #1a1a1a;
             color: white;
         }
-        
+
         .message {
             margin-bottom: 8px;
             padding: 5px;
             border-radius: 4px;
             background: rgba(255,255,255,0.1);
         }
-        
+
         .message-username {
             font-weight: bold;
             margin-right: 8px;
         }
-        
+
         .connection-status {
             padding: 10px;
             text-align: center;
             font-size: 12px;
         }
-        
+
         .status-connected { background: #4CAF50; color: white; }
         .status-disconnected { background: #f44336; color: white; }
         .status-connecting { background: #ff9800; color: white; }
@@ -105,15 +105,15 @@ La librería es compatible con todos los navegadores modernos que soportan WebSo
         <div class="chat-header">
             Chat Kick.com - <span id="channel-name">Cargando...</span>
         </div>
-        
+
         <div id="chat-messages" class="chat-messages"></div>
-        
+
         <div id="connection-status" class="connection-status status-disconnected">
             Desconectado
         </div>
     </div>
 
-    <script src="https://unpkg.com/kick-ws@latest/dist/kick-ws.min.js"></script>
+    <script src="https://unpkg.com/kick-wss@latest/dist/kick-ws.min.js"></script>
     <script>
         class ChatWidget {
             constructor() {
@@ -121,39 +121,39 @@ La librería es compatible con todos los navegadores modernos que soportan WebSo
                 this.messagesContainer = document.getElementById('chat-messages');
                 this.statusElement = document.getElementById('connection-status');
                 this.channelElement = document.getElementById('channel-name');
-                
+
                 this.setupEventListeners();
                 this.connect('xqc'); // Canal por defecto
             }
-            
+
             setupEventListeners() {
                 this.kickWS.on('ready', () => {
                     this.updateStatus('Conectado', 'connected');
                     this.channelElement.textContent = this.kickWS.getChannelName();
                 });
-                
+
                 this.kickWS.on('disconnect', () => {
                     this.updateStatus('Desconectado', 'disconnected');
                 });
-                
+
                 this.kickWS.on('error', (error) => {
                     console.error('Error WebSocket:', error);
                     this.updateStatus('Error', 'disconnected');
                 });
-                
+
                 this.kickWS.onChatMessage((message) => {
                     this.addMessage(message);
                 });
-                
+
                 this.kickWS.onUserBanned((ban) => {
                     this.addSystemMessage(`🚫 ${ban.username} fue baneado`);
                 });
-                
+
                 this.kickWS.onSubscription((sub) => {
                     this.addSystemMessage(`⭐ ¡${sub.username} se suscribió!`);
                 });
             }
-            
+
             connect(channelName) {
                 this.updateStatus('Conectando...', 'connecting');
                 this.kickWS.connect(channelName).catch(error => {
@@ -161,60 +161,60 @@ La librería es compatible con todos los navegadores modernos que soportan WebSo
                     this.updateStatus('Conexión fallida', 'disconnected');
                 });
             }
-            
+
             addMessage(message) {
                 const messageEl = document.createElement('div');
                 messageEl.className = 'message';
-                
+
                 const username = message.sender.username;
                 const color = message.sender.identity?.color || '#ffffff';
-                
+
                 messageEl.innerHTML = `
                     <span class="message-username" style="color: ${color}">${username}:</span>
                     <span class="message-content">${this.escapeHtml(message.content)}</span>
                 `;
-                
+
                 this.messagesContainer.appendChild(messageEl);
                 this.scrollToBottom();
             }
-            
+
             addSystemMessage(text) {
                 const messageEl = document.createElement('div');
                 messageEl.className = 'message';
                 messageEl.style.background = 'rgba(255, 215, 0, 0.2)';
                 messageEl.style.fontStyle = 'italic';
                 messageEl.textContent = text;
-                
+
                 this.messagesContainer.appendChild(messageEl);
                 this.scrollToBottom();
             }
-            
+
             updateStatus(text, status) {
                 this.statusElement.textContent = text;
                 this.statusElement.className = `connection-status status-${status}`;
             }
-            
+
             scrollToBottom() {
                 this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
             }
-            
+
             escapeHtml(text) {
                 const div = document.createElement('div');
                 div.textContent = text;
                 return div.innerHTML;
             }
-            
+
             changeChannel(channelName) {
                 this.kickWS.disconnect();
                 this.messagesContainer.innerHTML = '';
                 this.connect(channelName);
             }
         }
-        
+
         // Inicializar widget cuando la página carga
         document.addEventListener('DOMContentLoaded', () => {
             const chat = new ChatWidget();
-            
+
             // Ejemplo: Cambiar canal después de 30 segundos
             // setTimeout(() => chat.changeChannel('otro-canal'), 30000);
         });
@@ -239,7 +239,7 @@ self.addEventListener('message', (event) => {
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.js').then(registration => {
         const kickWS = new KickWebSocket();
-        
+
         kickWS.onChatMessage((message) => {
             // Enviar mensaje al service worker
             navigator.serviceWorker.controller.postMessage({
@@ -259,27 +259,27 @@ class MessageStorage {
         this.dbName = 'kick-messages';
         this.version = 1;
     }
-    
+
     async init() {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(this.dbName, this.version);
-            
+
             request.onerror = () => reject(request.error);
             request.onsuccess = () => resolve(request.result);
-            
+
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
                 if (!db.objectStoreNames.contains('messages')) {
-                    const store = db.createObjectStore('messages', { 
-                        keyPath: 'id', 
-                        autoIncrement: true 
+                    const store = db.createObjectStore('messages', {
+                        keyPath: 'id',
+                        autoIncrement: true
                     });
                     store.createIndex('timestamp', 'timestamp');
                 }
             };
         });
     }
-    
+
     async saveMessage(message) {
         const db = await this.init();
         return new Promise((resolve, reject) => {
@@ -289,19 +289,19 @@ class MessageStorage {
                 ...message,
                 timestamp: Date.now()
             });
-            
+
             request.onsuccess = () => resolve(request.result);
             request.onerror = () => reject(request.error);
         });
     }
-    
+
     async getMessages(limit = 100) {
         const db = await this.init();
         return new Promise((resolve, reject) => {
             const transaction = db.transaction(['messages'], 'readonly');
             const store = transaction.objectStore('messages');
             const request = store.getAll();
-            
+
             request.onsuccess = () => {
                 const messages = request.result
                     .sort((a, b) => b.timestamp - a.timestamp)
@@ -332,19 +332,19 @@ class ConnectionPool {
         this.maxConnections = maxConnections;
         this.currentIndex = 0;
     }
-    
+
     getConnection() {
         if (this.connections.length < this.maxConnections) {
             const ws = new KickWebSocket();
             this.connections.push(ws);
             return ws;
         }
-        
+
         const connection = this.connections[this.currentIndex];
         this.currentIndex = (this.currentIndex + 1) % this.maxConnections;
         return connection;
     }
-    
+
     closeAll() {
         this.connections.forEach(ws => ws.disconnect());
         this.connections = [];
@@ -364,23 +364,23 @@ const pool = new ConnectionPool();
 ```javascript
 class MemoryOptimizedChat {
     constructor() {
-        this.kickWS = new KickWebSocket({ 
+        this.kickWS = new KickWebSocket({
             enableBuffer: false, // Deshabilitar buffer para ahorrar memoria
             filteredEvents: ['ChatMessage'] // Escuchar solo eventos necesarios
         });
         this.maxMessages = 100;
         this.messages = [];
     }
-    
+
     addMessage(message) {
         this.messages.push(message);
-        
+
         // Eliminar mensajes antiguos para prevenir fugas de memoria
         if (this.messages.length > this.maxMessages) {
             this.messages.shift();
         }
     }
-    
+
     cleanup() {
         this.kickWS.disconnect();
         this.messages = [];
@@ -399,7 +399,7 @@ class MemoryOptimizedChat {
 
 ### Modo Debug
 ```javascript
-const kickWS = new KickWebSocket({ 
+const kickWS = new KickWebSocket({
     debug: true, // Habilitar logging detallado
     autoReconnect: true,
     reconnectInterval: 3000
@@ -412,7 +412,7 @@ const kickWS = new KickWebSocket();
 
 kickWS.on('error', (error) => {
     console.error('Error WebSocket:', error);
-    
+
     // Mostrar mensaje de error amigable
     const errorEl = document.getElementById('error-message');
     errorEl.textContent = 'Conexión fallida. Por favor recarga la página.';
@@ -421,7 +421,7 @@ kickWS.on('error', (error) => {
 
 kickWS.on('disconnect', ({ reason }) => {
     console.log('Desconectado:', reason);
-    
+
     // Intentar reconectar después de un retraso
     setTimeout(() => {
         if (!kickWS.isConnected()) {
