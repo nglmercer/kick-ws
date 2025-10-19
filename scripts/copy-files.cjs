@@ -1,22 +1,22 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 // Files to copy to dist/
 const distFiles = [
-  { src: 'README.md', dest: 'dist/README.md' },
-  { src: 'README.es.md', dest: 'dist/README.es.md' },
-  { src: 'LICENSE', dest: 'dist/LICENSE' }
+  { src: "README.md", dest: "dist/README.md" },
+  { src: "README.es.md", dest: "dist/README.es.md" },
+  { src: "LICENSE", dest: "dist/LICENSE" },
 ];
 
 // Files to copy to dist/browser/
 const browserFiles = [
-  { src: 'dist/kick-ws.min.js', dest: 'dist/browser/kick-ws.min.js' },
-  { src: 'dist/kick-ws.min.js.map', dest: 'dist/browser/kick-ws.min.js.map' },
-  { src: 'dist/kick-ws.js', dest: 'dist/browser/kick-ws.js' }
+  { src: "dist/kick-wss.min.js", dest: "dist/browser/kick-wss.min.js" },
+  { src: "dist/kick-wss.min.js.map", dest: "dist/browser/kick-wss.min.js.map" },
+  { src: "dist/kick-wss.js", dest: "dist/browser/kick-wss.js" },
 ];
 
 function ensureDir(dirPath) {
-  const fullPath = path.join(__dirname, '..', dirPath);
+  const fullPath = path.join(__dirname, "..", dirPath);
   if (!fs.existsSync(fullPath)) {
     fs.mkdirSync(fullPath, { recursive: true });
     console.log(`✅ Created directory: ${dirPath}`);
@@ -24,8 +24,8 @@ function ensureDir(dirPath) {
 }
 
 function copyFile(src, dest) {
-  const srcPath = path.join(__dirname, '..', src);
-  const destPath = path.join(__dirname, '..', dest);
+  const srcPath = path.join(__dirname, "..", src);
+  const destPath = path.join(__dirname, "..", dest);
 
   try {
     fs.copyFileSync(srcPath, destPath);
@@ -41,9 +41,9 @@ function main() {
   const args = process.argv.slice(2);
   const target = args[0];
 
-  if (target === 'dist') {
-    console.log('📁 Copying files to dist/...');
-    ensureDir('dist');
+  if (target === "dist") {
+    console.log("📁 Copying files to dist/...");
+    ensureDir("dist");
 
     let success = true;
     for (const file of distFiles) {
@@ -53,15 +53,14 @@ function main() {
     }
 
     if (success) {
-      console.log('✅ All files copied to dist/');
+      console.log("✅ All files copied to dist/");
     } else {
-      console.log('❌ Some files failed to copy to dist/');
+      console.log("❌ Some files failed to copy to dist/");
       process.exit(1);
     }
-  }
-  else if (target === 'browser') {
-    console.log('📁 Copying files to dist/browser/...');
-    ensureDir('dist/browser');
+  } else if (target === "browser") {
+    console.log("📁 Copying files to dist/browser/...");
+    ensureDir("dist/browser");
 
     let success = true;
     for (const file of browserFiles) {
@@ -71,16 +70,15 @@ function main() {
     }
 
     if (success) {
-      console.log('✅ All files copied to dist/browser/');
+      console.log("✅ All files copied to dist/browser/");
     } else {
-      console.log('❌ Some files failed to copy to dist/browser/');
+      console.log("❌ Some files failed to copy to dist/browser/");
       process.exit(1);
     }
-  }
-  else {
-    console.log('Usage: node copy-files.cjs [dist|browser]');
-    console.log('  dist    - Copy README files and LICENSE to dist/');
-    console.log('  browser - Copy bundled files to dist/browser/');
+  } else {
+    console.log("Usage: node copy-files.cjs [dist|browser]");
+    console.log("  dist    - Copy README files and LICENSE to dist/");
+    console.log("  browser - Copy bundled files to dist/browser/");
     process.exit(1);
   }
 }

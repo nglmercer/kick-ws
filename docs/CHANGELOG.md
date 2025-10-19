@@ -115,9 +115,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Edge 80+
 
 ### Distribution
-- npm package: `kick-ws`
+- npm package: `kick-wss`
 - CDN: unpkg.com and jsdelivr
-- Minified version: `kick-ws.min.js`
+- Minified version: `kick-wss.min.js`
 - Source maps included
 - TypeScript definitions included
 

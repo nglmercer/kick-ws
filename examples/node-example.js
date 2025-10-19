@@ -1,37 +1,37 @@
 // Ejemplo básico de uso de Kick WebSocket en Node.js
-import { KickWebSocket } from 'kick-ws';
+import { KickWebSocket } from "kick-wss";
 
 // Crear instancia con opciones de debug
 const kickWS = new KickWebSocket({
   debug: true,
   autoReconnect: true,
-  reconnectInterval: 5000
+  reconnectInterval: 5000,
 });
 
 // Conectar a un canal
-const channelName = process.argv[2] || 'xqc';
+const channelName = process.argv[2] || "xqc";
 
 console.log(`🚀 Conectando al canal: ${channelName}`);
 
 // Eventos de conexión
-kickWS.on('ready', () => {
-  console.log('✅ Conectado exitosamente a:', kickWS.getChannelName());
-  console.log('📊 ID del canal:', kickWS.getChannelId());
+kickWS.on("ready", () => {
+  console.log("✅ Conectado exitosamente a:", kickWS.getChannelName());
+  console.log("📊 ID del canal:", kickWS.getChannelId());
 });
 
-kickWS.on('disconnect', ({ reason }) => {
-  console.log('❌ Desconectado:', reason);
+kickWS.on("disconnect", ({ reason }) => {
+  console.log("❌ Desconectado:", reason);
 });
 
-kickWS.on('error', (error) => {
-  console.error('⚠️ Error de conexión:', error.message);
+kickWS.on("error", (error) => {
+  console.error("⚠️ Error de conexión:", error.message);
 });
 
 // Eventos de chat
 kickWS.onChatMessage((message) => {
   const timestamp = new Date().toLocaleTimeString();
   const username = message.sender.username;
-  const color = message.sender.identity?.color || 'white';
+  const color = message.sender.identity?.color || "white";
   const content = message.content;
 
   console.log(`[${timestamp}] ${username}: ${content}`);
@@ -56,18 +56,19 @@ kickWS.onStreamHost((host) => {
 });
 
 // Conectar al canal
-kickWS.connect(channelName)
+kickWS
+  .connect(channelName)
   .then(() => {
-    console.log('🎉 Iniciando conexión...');
+    console.log("🎉 Iniciando conexión...");
   })
-  .catch(error => {
-    console.error('❌ Error al conectar:', error.message);
+  .catch((error) => {
+    console.error("❌ Error al conectar:", error.message);
     process.exit(1);
   });
 
 // Manejar cierre graceful
-process.on('SIGINT', () => {
-  console.log('\n👋 Cerrando conexión...');
+process.on("SIGINT", () => {
+  console.log("\n👋 Cerrando conexión...");
   kickWS.disconnect();
   process.exit(0);
 });

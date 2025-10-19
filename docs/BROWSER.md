@@ -6,7 +6,7 @@ This guide covers how to use Kick WebSocket Lite in web browsers.
 
 ### Minified Version (Recommended)
 ```html
-<script src="https://unpkg.com/kick-wss@latest/dist/kick-ws.min.js"></script>
+<script src="https://unpkg.com/kick-wss@latest/dist/kick-wss.min.js"></script>
 <script>
   // Available as global variable KickWebSocket
   const kickWS = new KickWebSocket({ debug: true });
@@ -17,7 +17,7 @@ This guide covers how to use Kick WebSocket Lite in web browsers.
 ### ES Modules (Modern Browsers)
 ```html
 <script type="module">
-  import { KickWebSocket } from 'https://unpkg.com/kick-wss@latest/dist/kick-ws.min.js';
+  import { KickWebSocket } from 'https://unpkg.com/kick-wss@latest/dist/kick-wss.min.js';
 
   const kickWS = new KickWebSocket({ debug: true });
   kickWS.connect('channel-name');
@@ -113,7 +113,7 @@ The library is compatible with all modern browsers that support WebSocket API. N
         </div>
     </div>
 
-    <script src="https://unpkg.com/kick-wss@latest/dist/kick-ws.min.js"></script>
+    <script src="https://unpkg.com/kick-wss@latest/dist/kick-wss.min.js"></script>
     <script>
         class ChatWidget {
             constructor() {

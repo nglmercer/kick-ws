@@ -14,12 +14,12 @@
     "examples",
     "LICENSE"
   ],
-  "unpkg": "dist/kick-ws.min.js",
-  "jsdelivr": "dist/kick-ws.min.js",
+  "unpkg": "dist/kick-wss.min.js",
+  "jsdelivr": "dist/kick-wss.min.js",
   "scripts": {
     "build": "tsc && node scripts/bundle.cjs && bun run build:minified && bun run build:browser && bun run build:copy-files",
-    "build:minified": "bun x terser dist/kick-ws.js -c -m -o dist/kick-ws.min.js --source-map filename=kick-ws.min.js.map",
-    "build:browser": "node -e \"const fs = require('fs'); if (!fs.existsSync('dist/browser')) fs.mkdirSync('dist/browser', { recursive: true }); const copyFile = (src, dest) => { fs.copyFileSync(src, dest); }; copyFile('dist/kick-ws.min.js', 'dist/browser/kick-ws.min.js'); copyFile('dist/kick-ws.min.js.map', 'dist/browser/kick-ws.min.js.map'); copyFile('dist/kick-ws.js', 'dist/browser/kick-ws.js');\"",
+    "build:minified": "bun x terser dist/kick-wss.js -c -m -o dist/kick-wss.min.js --source-map filename=kick-wss.min.js.map",
+    "build:browser": "node -e \"const fs = require('fs'); if (!fs.existsSync('dist/browser')) fs.mkdirSync('dist/browser', { recursive: true }); const copyFile = (src, dest) => { fs.copyFileSync(src, dest); }; copyFile('dist/kick-wss.min.js', 'dist/browser/kick-wss.min.js'); copyFile('dist/kick-wss.min.js.map', 'dist/browser/kick-wss.min.js.map'); copyFile('dist/kick-wss.js', 'dist/browser/kick-wss.js');\"",
     "build:copy-files": "node -e \"const fs = require('fs'); const copyFile = (src, dest) => { fs.copyFileSync(src, dest); }; copyFile('README.md', 'dist/README.md'); copyFile('README.es.md', 'dist/README.es.md'); copyFile('LICENSE', 'dist/LICENSE');\"",
     "build:node": "tsc",
     "dev": "tsc --watch",
@@ -56,17 +56,17 @@
   "author": {
     "name": "Kick.js Team",
     "email": "support@kick-wss.com",
-    "url": "https://github.com/nglmercer/kick-ws"
+    "url": "https://github.com/nglmercer/kick-wss"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nglmercer/kick-ws.git",
+    "url": "git+https://github.com/nglmercer/kick-wss.git",
     "directory": "websocket-lib"
   },
   "bugs": {
-    "url": "https://github.com/nglmercer/kick-ws/issues"
+    "url": "https://github.com/nglmercer/kick-wss/issues"
   },
-  "homepage": "https://github.com/nglmercer/kick-ws/tree/main/websocket-lib#readme",
+  "homepage": "https://github.com/nglmercer/kick-wss/tree/main/websocket-lib#readme",
   "license": "MIT",
   "engines": {
     "node": ">=14.0.0"

@@ -18,17 +18,17 @@ A lightweight and dependency-free library for connecting to Kick.com WebSockets.
 
 ### Node.js
 ```bash
-npm install kick-ws
+npm install kick-wss
 ```
 
 ### Browser (CDN)
 ```html
 <!-- Minified version -->
-<script src="https://unpkg.com/kick-wss@latest/dist/kick-ws.min.js"></script>
+<script src="https://unpkg.com/kick-wss@latest/dist/kick-wss.min.js"></script>
 
 <!-- ES Modules -->
 <script type="module">
-  import { KickWebSocket } from 'https://unpkg.com/kick-wss@latest/dist/kick-ws.min.js';
+  import { KickWebSocket } from 'https://unpkg.com/kick-wss@latest/dist/kick-wss.min.js';
   // Your code here
 </script>
 ```
@@ -37,7 +37,7 @@ npm install kick-ws
 
 ### Node.js / Backend
 ```typescript
-import { KickWebSocket } from 'kick-ws';
+import { KickWebSocket } from 'kick-wss';
 
 // Create instance
 const kickWS = new KickWebSocket({ debug: true });
@@ -75,7 +75,7 @@ kickWS.on('error', (error) => {
     <div id="messages"></div>
 
     <script type="module">
-      import { KickWebSocket } from 'https://unpkg.com/kick-wss@latest/dist/kick-ws.min.js';
+      import { KickWebSocket } from 'https://unpkg.com/kick-wss@latest/dist/kick-wss.min.js';
 
       const kickWS = new KickWebSocket({ debug: true });
       const messagesDiv = document.getElementById('messages');
@@ -267,7 +267,7 @@ Each event has its own data structure. See TypeScript types for details.
 ### Activity Logging Bot
 
 ```typescript
-import { KickWebSocket } from 'kick-ws';
+import { KickWebSocket } from 'kick-wss';
 
 const kickWS = new KickWebSocket({ debug: true });
 
@@ -395,8 +395,8 @@ MIT License - see LICENSE file for details.
 ## Support
 
 - 📧 Email: support@kick-wss.com
-- 🐛 Issues: [GitHub Issues](https://github.com/nglmercer/kick-ws/issues)
-- 📖 Documentation: [Wiki](https://github.com/nglmercer/kick-ws/wiki)
+- 🐛 Issues: [GitHub Issues](https://github.com/nglmercer/kick-wss/issues)
+- 📖 Documentation: [Wiki](https://github.com/nglmercer/kick-wss/wiki)
 
 ---
 
