@@ -240,8 +240,653 @@
 
     <!-- Importamos la librería desde un CDN o local -->
     <script type="module">
-      // Importamos la librería desde los archivos locales
-      import { KickWebSocket } from "./lib/index.js";
+      class EventEmitter {
+        constructor() {
+          ((this.events = new Map()), (this.maxListeners = 10));
+        }
+        on(e, t) {
+          this.events.has(e) || this.events.set(e, new Set());
+          this.events.get(e).add(t);
+        }
+        once(e, t) {
+          const s = (...n) => {
+            (this.off(e, s), t(...n));
+          };
+          this.on(e, s);
+        }
+        off(e, t) {
+          const s = this.events.get(e);
+          s && (s.delete(t), 0 === s.size && this.events.delete(e));
+        }
+        removeAllListeners(e) {
+          e ? this.events.delete(e) : this.events.clear();
+        }
+        emit(e, ...t) {
+          const s = this.events.get(e);
+          if (!s || 0 === s.size) return !1;
+          const n = Array.from(s);
+          for (const s of n)
+            try {
+              s(...t);
+            } catch (t) {
+              console.error(`Error in event listener for "${e}":`, t);
+            }
+          return !0;
+        }
+        listenerCount(e) {
+          const t = this.events.get(e);
+          return t ? t.size : 0;
+        }
+        eventNames() {
+          return Array.from(this.events.keys());
+        }
+        setMaxListeners(e) {
+          this.maxListeners = e;
+        }
+        getMaxListeners() {
+          return this.maxListeners;
+        }
+        prependListener(e, t) {
+          this.events.has(e) || this.events.set(e, new Set());
+          const s = this.events.get(e),
+            n = Array.from(s);
+          (s.clear(), s.add(t), n.forEach((e) => s.add(e)));
+        }
+        prependOnceListener(e, t) {
+          const s = (...n) => {
+            (this.off(e, s), t(...n));
+          };
+          this.prependListener(e, s);
+        }
+      }
+      class MessageParser {
+        static parseMessage(e) {
+          try {
+            if (!e || "" === e.trim()) return null;
+            const t = JSON.parse(e);
+            if (!t.event || void 0 === t.data) return null;
+            if (
+              t.event.startsWith("pusher:") ||
+              t.event.startsWith("pusher_internal:")
+            )
+              return null;
+            if ("" === t.event || "" === t.data) return null;
+            let s;
+            try {
+              if (void 0 === t.data || "" === t.data) return null;
+              s = JSON.parse(t.data);
+            } catch (e) {
+              return (console.error("Error parsing event data:", e), null);
+            }
+            switch (t.event) {
+              case "App\\Events\\ChatMessageEvent":
+                return { type: "ChatMessage", data: this.parseChatMessage(s) };
+              case "App\\Events\\MessageDeletedEvent":
+                return {
+                  type: "MessageDeleted",
+                  data: this.parseMessageDeleted(s),
+                };
+              case "App\\Events\\UserBannedEvent":
+                return { type: "UserBanned", data: this.parseUserBanned(s) };
+              case "App\\Events\\UserUnbannedEvent":
+                return {
+                  type: "UserUnbanned",
+                  data: this.parseUserUnbanned(s),
+                };
+              case "App\\Events\\SubscriptionEvent":
+                return {
+                  type: "Subscription",
+                  data: this.parseSubscription(s),
+                };
+              case "App\\Events\\GiftedSubscriptionsEvent":
+                return {
+                  type: "GiftedSubscriptions",
+                  data: this.parseGiftedSubscriptions(s),
+                };
+              case "App\\Events\\PinnedMessageCreatedEvent":
+                return {
+                  type: "PinnedMessageCreated",
+                  data: this.parsePinnedMessageCreated(s),
+                };
+              case "App\\Events\\StreamHostEvent":
+                return { type: "StreamHost", data: this.parseStreamHost(s) };
+              case "App\\Events\\PollUpdateEvent":
+                return { type: "PollUpdate", data: this.parsePollUpdate(s) };
+              case "App\\Events\\PollDeleteEvent":
+                return { type: "PollDelete", data: this.parsePollDelete(s) };
+              default:
+                return (
+                  t.event?.startsWith("pusher:") ||
+                    t.event?.startsWith("pusher_internal:") ||
+                    console.warn("Unknown event type:", t.event),
+                  null
+                );
+            }
+          } catch (e) {
+            return (console.error("Error parsing message:", e), null);
+          }
+        }
+        static parseChatMessage(e) {
+          return {
+            id: e.id,
+            content: this.cleanEmotes(e.content),
+            type: "message",
+            created_at: e.created_at,
+            sender: {
+              id: e.sender.id,
+              username: e.sender.username,
+              slug: e.sender.slug,
+              identity: {
+                color: e.sender.identity?.color || "#ffffff",
+                badges: e.sender.identity?.badges || [],
+              },
+            },
+            chatroom: { id: e.chatroom?.id || 0 },
+          };
+        }
+        static parseMessageDeleted(e) {
+          return {
+            message_id: e.message_id,
+            chatroom_id: e.chatroom_id,
+            type: "message_deleted",
+          };
+        }
+        static parseUserBanned(e) {
+          return {
+            username: e.username || e.banned_username || "unknown",
+            type: "user_banned",
+          };
+        }
+        static parseUserUnbanned(e) {
+          return {
+            username: e.username || e.unbanned_username || "unknown",
+            type: "user_unbanned",
+          };
+        }
+        static parseSubscription(e) {
+          return {
+            username: e.username || e.user?.username || "unknown",
+            type: "subscription",
+          };
+        }
+        static parseGiftedSubscriptions(e) {
+          return {
+            gifted_by:
+              e.gifted_by ||
+              ("object" == typeof e.gifter ? e.gifter.username : e.gifter) ||
+              "unknown",
+            recipients: Array.isArray(e.recipients)
+              ? e.recipients.map((e) =>
+                  "string" == typeof e ? e : e.username || "unknown",
+                )
+              : [],
+            type: "gifted_subscriptions",
+          };
+        }
+        static parsePinnedMessageCreated(e) {
+          return {
+            message: this.parseChatMessage(e.message),
+            type: "pinned_message_created",
+          };
+        }
+        static parseStreamHost(e) {
+          return {
+            hoster:
+              "string" == typeof e.hoster
+                ? e.hoster
+                : e.hoster?.username || "unknown",
+            hosted_channel:
+              "string" == typeof e.hosted_channel
+                ? e.hosted_channel
+                : e.hosted_channel?.username || "unknown",
+            type: "stream_host",
+          };
+        }
+        static parsePollUpdate(e) {
+          return {
+            poll_id: e.id,
+            question: e.question,
+            options: (e.options || []).map((e) => ({
+              id: e.id,
+              text: e.text,
+              votes: e.votes || 0,
+            })),
+            type: "poll_update",
+          };
+        }
+        static parsePollDelete(e) {
+          return { poll_id: e.id, type: "poll_delete" };
+        }
+        static cleanEmotes(e) {
+          return e ? e.replace(/\[emote:(\d+):(\w+)\]/g, "$2") : "";
+        }
+        static isValidMessage(e) {
+          try {
+            if (!e || "" === e.trim()) return !1;
+            const t = JSON.parse(e);
+            return (
+              !!t.event && void 0 !== t.data && "" !== t.event && "" !== t.data
+            );
+          } catch {
+            return !1;
+          }
+        }
+        static extractEventType(e) {
+          try {
+            if (!e || "" === e.trim()) return null;
+            const t = JSON.parse(e);
+            return t.event
+              ? t.event.startsWith("pusher:") ||
+                t.event.startsWith("pusher_internal:") ||
+                "" === t.event
+                ? null
+                : t.event
+              : null;
+          } catch {
+            return null;
+          }
+        }
+      }
+      class WebSocketManager extends EventEmitter {
+        constructor(e = {}) {
+          (super(),
+            (this.ws = null),
+            (this.channelName = ""),
+            (this.channelId = 0),
+            (this.connectionState = "disconnected"),
+            (this.reconnectTimer = null),
+            (this.messageBuffer = []),
+            (this.isManualDisconnect = !1),
+            (this.WEBSOCKET_URL =
+              "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679"),
+            (this.WS_PARAMS = {
+              protocol: "7",
+              client: "js",
+              version: "8.4.0",
+              flash: "false",
+            }),
+            (this.options = {
+              debug: !1,
+              autoReconnect: !0,
+              reconnectInterval: 5e3,
+              enableBuffer: !1,
+              bufferSize: 1e3,
+              filteredEvents: [],
+              ...e,
+            }),
+            this.log(
+              "WebSocketManager initialized with options:",
+              this.options,
+            ));
+        }
+        async connect(e) {
+          if (
+            "connected" !== this.connectionState &&
+            "connecting" !== this.connectionState
+          ) {
+            ((this.channelName = e), (this.isManualDisconnect = !1));
+            try {
+              await this.performConnection();
+            } catch (e) {
+              throw (this.handleConnectionError(e), e);
+            }
+          } else this.log("Already connected or connecting");
+        }
+        async performConnection() {
+          (this.setConnectionState("connecting"),
+            this.log(`Connecting to channel: ${this.channelName}`));
+          const e = await this.getChannelInfo(this.channelName);
+          this.channelId = e.chatroom.id;
+          const t = this.buildWebSocketUrl();
+          ((this.ws = new WebSocket(t)), this.setupWebSocketHandlers());
+        }
+        buildWebSocketUrl() {
+          return `${this.customWebSocketUrl || this.WEBSOCKET_URL}?${new URLSearchParams({ ...this.WS_PARAMS, ...this.customWebSocketParams }).toString()}`;
+        }
+        setWebSocketUrl(e) {
+          ((this.customWebSocketUrl = e),
+            this.log(`Custom WebSocket URL set: ${e}`));
+        }
+        setWebSocketParams(e) {
+          ((this.customWebSocketParams = {
+            ...this.customWebSocketParams,
+            ...e,
+          }),
+            this.log(
+              "Custom WebSocket params set:",
+              this.customWebSocketParams,
+            ));
+        }
+        resetWebSocketConfig() {
+          ((this.customWebSocketUrl = void 0),
+            (this.customWebSocketParams = void 0),
+            this.log("WebSocket configuration reset to defaults"));
+        }
+        setupWebSocketHandlers() {
+          this.ws &&
+            ((this.ws.onopen = () => {
+              (this.log("WebSocket connection opened"),
+                this.subscribeToChannel());
+            }),
+            (this.ws.onmessage = (e) => {
+              this.handleMessage(e.data);
+            }),
+            (this.ws.onclose = (e) => {
+              (this.log(`WebSocket closed: ${e.code} - ${e.reason}`),
+                this.handleDisconnect(e.code, e.reason));
+            }),
+            (this.ws.onerror = (e) => {
+              (this.log("WebSocket error:", e), this.emit("error", e));
+            }));
+        }
+        subscribeToChannel() {
+          if (!this.ws) return;
+          const e = {
+            event: "pusher:subscribe",
+            data: { auth: "", channel: `chatrooms.${this.channelId}.v2` },
+          };
+          (this.ws.send(JSON.stringify(e)),
+            this.log(`Subscribed to channel: chatrooms.${this.channelId}.v2`),
+            this.setConnectionState("connected"),
+            this.emit("ready", { channel: this.channelName }));
+        }
+        handleMessage(e) {
+          (this.emit("rawMessage", e),
+            this.options.enableBuffer && this.addToBuffer(e));
+          try {
+            const t = JSON.parse(e);
+            if (
+              t.event?.startsWith("pusher:") ||
+              t.event?.startsWith("pusher_internal:")
+            )
+              return void this.log(`Ignoring Pusher system event: ${t.event}`);
+          } catch (e) {}
+          const t = MessageParser.extractEventType(e);
+          if (t && this.isEventFiltered(t))
+            return void this.log(`Event filtered: ${t}`);
+          const s = MessageParser.parseMessage(e);
+          s && (this.log(`Parsed event: ${s.type}`), this.emit(s.type, s.data));
+        }
+        exportRawMessages() {
+          return [...this.messageBuffer];
+        }
+        exportRawMessagesInRange(e, t) {
+          const s = [...this.messageBuffer];
+          return t ? s.slice(e, t) : s.slice(e);
+        }
+        exportRawMessagesByEventType(e) {
+          return this.messageBuffer.filter((t) => {
+            const s = MessageParser.parseMessage(t);
+            return s && s.type === e;
+          });
+        }
+        clearRawMessagesByEventType(e) {
+          this.messageBuffer = this.messageBuffer.filter((t) => {
+            const s = MessageParser.parseMessage(t);
+            return !(s && s.type === e);
+          });
+        }
+        getRawMessageStats() {
+          const e = {
+            total: this.messageBuffer.length,
+            byType: {},
+            oldestTimestamp: void 0,
+            newestTimestamp: void 0,
+          };
+          return (
+            this.messageBuffer.forEach((t) => {
+              try {
+                const s = MessageParser.parseMessage(t);
+                s && (e.byType[s.type] = (e.byType[s.type] || 0) + 1);
+              } catch (e) {}
+            }),
+            e
+          );
+        }
+        addToBuffer(e) {
+          (this.messageBuffer.push(e),
+            this.messageBuffer.length > this.options.bufferSize &&
+              this.messageBuffer.shift());
+        }
+        isEventFiltered(e) {
+          if (0 === this.options.filteredEvents.length) return !1;
+          const t = {
+            "App\\Events\\ChatMessageEvent": "ChatMessage",
+            "App\\Events\\MessageDeletedEvent": "MessageDeleted",
+            "App\\Events\\UserBannedEvent": "UserBanned",
+            "App\\Events\\UserUnbannedEvent": "UserUnbanned",
+            "App\\Events\\SubscriptionEvent": "Subscription",
+            "App\\Events\\GiftedSubscriptionsEvent": "GiftedSubscriptions",
+            "App\\Events\\PinnedMessageCreatedEvent": "PinnedMessageCreated",
+            "App\\Events\\StreamHostEvent": "StreamHost",
+            "App\\Events\\PollUpdateEvent": "PollUpdate",
+            "App\\Events\\PollDeleteEvent": "PollDelete",
+          }[e];
+          return !!t && !this.options.filteredEvents.includes(t);
+        }
+        handleDisconnect(e, t) {
+          (this.setConnectionState("disconnected"),
+            this.emit("disconnect", { code: e, reason: t }),
+            this.options.autoReconnect &&
+              !this.isManualDisconnect &&
+              this.scheduleReconnect());
+        }
+        handleConnectionError(e) {
+          (this.setConnectionState("error"),
+            this.emit("error", e),
+            this.options.autoReconnect &&
+              !this.isManualDisconnect &&
+              this.scheduleReconnect());
+        }
+        scheduleReconnect() {
+          (this.reconnectTimer && clearTimeout(this.reconnectTimer),
+            this.setConnectionState("reconnecting"),
+            this.log(
+              `Scheduling reconnect in ${this.options.reconnectInterval}ms`,
+            ),
+            (this.reconnectTimer = setTimeout(() => {
+              (this.log("Attempting to reconnect..."),
+                this.performConnection().catch((e) => {
+                  this.log("Reconnection failed:", e);
+                }));
+            }, this.options.reconnectInterval)));
+        }
+        disconnect() {
+          ((this.isManualDisconnect = !0),
+            this.reconnectTimer &&
+              (clearTimeout(this.reconnectTimer), (this.reconnectTimer = null)),
+            this.ws &&
+              (this.ws.close(1e3, "Manual disconnect"), (this.ws = null)),
+            this.setConnectionState("disconnected"),
+            this.log("Manual disconnect completed"));
+        }
+        async getChannelInfo(e) {
+          const t = `https://kick.com/api/v2/channels/${e}`;
+          try {
+            const e = await fetch(t);
+            if (!e.ok) throw new Error(`HTTP ${e.status}: ${e.statusText}`);
+            return await e.json();
+          } catch (t) {
+            throw (
+              this.log("Error fetching channel info:", t),
+              new Error(`Failed to fetch channel info for ${e}: ${String(t)}`)
+            );
+          }
+        }
+        setConnectionState(e) {
+          const t = this.connectionState;
+          ((this.connectionState = e),
+            this.log(`Connection state changed: ${t} -> ${e}`));
+        }
+        log(...e) {
+          this.options.debug && console.log("[KickWebSocket]", ...e);
+        }
+        on(e, t) {
+          super.on(e, t);
+        }
+        once(e, t) {
+          super.once(e, t);
+        }
+        off(e, t) {
+          super.off(e, t);
+        }
+        onChatMessage(e) {
+          this.on("ChatMessage", e);
+        }
+        onMessageDeleted(e) {
+          this.on("MessageDeleted", e);
+        }
+        onUserBanned(e) {
+          this.on("UserBanned", e);
+        }
+        onUserUnbanned(e) {
+          this.on("UserUnbanned", e);
+        }
+        onSubscription(e) {
+          this.on("Subscription", e);
+        }
+        onGiftedSubscriptions(e) {
+          this.on("GiftedSubscriptions", e);
+        }
+        onPinnedMessageCreated(e) {
+          this.on("PinnedMessageCreated", e);
+        }
+        onStreamHost(e) {
+          this.on("StreamHost", e);
+        }
+        onPollUpdate(e) {
+          this.on("PollUpdate", e);
+        }
+        onPollDelete(e) {
+          this.on("PollDelete", e);
+        }
+        onReady(e) {
+          this.on("ready", e);
+        }
+        onDisconnect(e) {
+          this.on("disconnect", e);
+        }
+        onError(e) {
+          this.on("error", e);
+        }
+        onRawMessage(e) {
+          this.on("rawMessage", e);
+        }
+        isConnected() {
+          return (
+            "connected" === this.connectionState &&
+            this.ws?.readyState === WebSocket.OPEN
+          );
+        }
+        getConnectionState() {
+          return this.connectionState;
+        }
+        getChannelName() {
+          return this.channelName;
+        }
+        getChannelId() {
+          return this.channelId;
+        }
+        getMessageBuffer() {
+          return [...this.messageBuffer];
+        }
+        clearMessageBuffer() {
+          this.messageBuffer = [];
+        }
+        updateOptions(e) {
+          ((this.options = { ...this.options, ...e }),
+            this.log("Options updated:", this.options));
+        }
+        getStats() {
+          return {
+            connectionState: this.connectionState,
+            channelName: this.channelName,
+            channelId: this.channelId,
+            messageBufferSize: this.messageBuffer.length,
+            listenerCount: this.eventNames().length,
+            eventNames: this.eventNames(),
+            rawMessageStats: this.getRawMessageStats(),
+            customWebSocketConfig: {
+              url: this.customWebSocketUrl,
+              params: this.customWebSocketParams,
+            },
+          };
+        }
+      }
+      export const KICK_EVENTS = [
+        "ChatMessage",
+        "MessageDeleted",
+        "UserBanned",
+        "UserUnbanned",
+        "Subscription",
+        "GiftedSubscriptions",
+        "PinnedMessageCreated",
+        "StreamHost",
+        "PollUpdate",
+        "PollDelete",
+        "ready",
+        "disconnect",
+        "error",
+        "rawMessage",
+      ];
+      export class KickWebSocket extends WebSocketManager {
+        constructor(e = {}) {
+          super(e);
+        }
+        onAllEvents(e) {
+          [
+            "ChatMessage",
+            "MessageDeleted",
+            "UserBanned",
+            "UserUnbanned",
+            "Subscription",
+            "GiftedSubscriptions",
+            "PinnedMessageCreated",
+            "StreamHost",
+            "PollUpdate",
+            "PollDelete",
+            "rawMessage",
+            "ready",
+            "error",
+            "disconnect",
+          ].forEach((t) => {
+            this.on(t, e);
+          });
+        }
+        onChatEvents(e) {
+          ["ChatMessage", "MessageDeleted", "PinnedMessageCreated"].forEach(
+            (t) => {
+              this.on(t, e);
+            },
+          );
+        }
+        onUserEvents(e) {
+          [
+            "UserBanned",
+            "UserUnbanned",
+            "Subscription",
+            "GiftedSubscriptions",
+          ].forEach((t) => {
+            this.on(t, e);
+          });
+        }
+        onStreamEvents(e) {
+          ["StreamHost", "PollUpdate", "PollDelete"].forEach((t) => {
+            this.on(t, e);
+          });
+        }
+        static createDebug(e) {
+          const t = new KickWebSocket({
+            debug: !0,
+            autoReconnect: !0,
+            reconnectInterval: 3e3,
+            enableBuffer: !0,
+            bufferSize: 500,
+          });
+          return (e && t.connect(e).catch(console.error), t);
+        }
+      }
+      export default KickWebSocket;
 
       // UI Controller
       class UIController {
@@ -431,6 +1076,5 @@
         new UIController();
       });
     </script>
-    <script src="https://unpkg.com/kick-wss@latest/dist/kick-wss.min.js"></script>
   </body>
 </html>

@@ -13,7 +13,7 @@ import type {
 // Configuración de tests
 const TEST_CONFIG = {
   // Canal activo para pruebas (puedes cambiarlo por uno que esté activo)
-  channelName: "mernuel", // Canal popular que suele estar activo
+  channelName: "elzeein", // Canal popular que suele estar activo
   timeout: 10000, // 10 segundos de timeout para conexión
   messageWaitTime: 30000, // 30segs para esperar mensajes
   debug: true,
