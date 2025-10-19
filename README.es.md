@@ -24,11 +24,11 @@ npm install kick-ws
 ### Navegador (CDN)
 ```html
 <!-- Versión minificada -->
-<script src="https://unpkg.com/kick-ws@latest/dist/kick-ws.min.js"></script>
+<script src="https://unpkg.com/kick-wss@latest/dist/kick-ws.min.js"></script>
 
 <!-- Módulos ES -->
 <script type="module">
-  import { KickWebSocket } from 'https://unpkg.com/kick-ws@latest/dist/kick-ws.min.js';
+  import { KickWebSocket } from 'https://unpkg.com/kick-wss@latest/dist/kick-ws.min.js';
   // Tu código aquí
 </script>
 ```
@@ -75,7 +75,7 @@ kickWS.on('error', (error) => {
     <div id="messages"></div>
 
     <script type="module">
-      import { KickWebSocket } from 'https://unpkg.com/kick-ws@latest/dist/kick-ws.min.js';
+      import { KickWebSocket } from 'https://unpkg.com/kick-wss@latest/dist/kick-ws.min.js';
 
       const kickWS = new KickWebSocket({ debug: true });
       const messagesDiv = document.getElementById('messages');
