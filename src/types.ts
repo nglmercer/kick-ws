@@ -16,6 +16,28 @@ export enum KickEvent {
   KicksGifted = "KicksGifted",
 }
 
+// Enum simple para nombres de eventos (usado en on())
+export enum KickEvents {
+  ChatMessage = "ChatMessage",
+  MessageDeleted = "MessageDeleted",
+  UserBanned = "UserBanned",
+  UserUnbanned = "UserUnbanned",
+  Subscription = "Subscription",
+  GiftedSubscriptions = "GiftedSubscriptions",
+  PinnedMessageCreated = "PinnedMessageCreated",
+  StreamHost = "StreamHost",
+  PollUpdate = "PollUpdate",
+  PollDelete = "PollDelete",
+  RewardRedeemed = "RewardRedeemed",
+  KicksGifted = "KicksGifted",
+  PointsUpdated = "PointsUpdated",
+  SubscriptionSucceeded = "pusher_internal:subscription_succeeded",
+  Ready = "ready",
+  Disconnect = "disconnect",
+  Error = "error",
+  RawMessage = "rawMessage",
+}
+
 // Mapeo para compatibilidad con nombres antiguos
 export const LEGACY_EVENT_MAPPING: Record<string, string> = {
   "App\\Events\\ChatMessageEvent": "ChatMessageEvent",
@@ -169,6 +191,20 @@ export interface KicksGiftedEvent {
   type: "kicks_gifted";
 }
 
+export interface PointsUpdatedEvent {
+  reason: string;
+  points: number;
+  balance: number;
+  user_id: number;
+  channel_id: number;
+  type: "points_updated";
+}
+
+export interface SubscriptionSucceededEvent {
+  channel: string;
+  type: "subscription_succeeded";
+}
+
 // Array de todos los eventos disponibles
 export const KICK_EVENTS = [
   "ChatMessage",
@@ -183,10 +219,12 @@ export const KICK_EVENTS = [
   "PollDelete",
   "RewardRedeemed",
   "KicksGifted",
+  "PointsUpdated",
   "ready",
   "disconnect",
   "error",
   "rawMessage",
+  "subscriptionSucceeded",
 ] as const;
 
 // Tipos de eventos que pueden ser emitidos
@@ -206,6 +244,8 @@ export interface EventDataMap {
   PollDelete: PollDeleteEvent;
   RewardRedeemed: RewardRedeemedEvent;
   KicksGifted: KicksGiftedEvent;
+  PointsUpdated: PointsUpdatedEvent;
+  subscriptionSucceeded: SubscriptionSucceededEvent;
   ready: { channel: string };
   disconnect: { reason?: string };
   error: Error;
@@ -226,6 +266,8 @@ export type KickEventData =
   | PollDeleteEvent
   | RewardRedeemedEvent
   | KicksGiftedEvent
+  | PointsUpdatedEvent
+  | SubscriptionSucceededEvent
   | { channel: string } // ready event
   | { reason?: string } // disconnect event
   | Error // error event
